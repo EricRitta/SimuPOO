@@ -37,17 +37,24 @@ def main():
 	pygame.display.set_caption('Jogo da Areia')
 	clock = pygame.time.Clock()
 	rodando = True
+	mouse_pressionado = False
 	while rodando:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				rodando = False
 			elif event.type == pygame.MOUSEBUTTONDOWN:
-				if event.button == 1:  # Clique esquerdo
-					mx, my = pygame.mouse.get_pos()
-					x = mx // TAM_PIXEL
-					y = my // TAM_PIXEL
-					if 0 <= x < COLUNAS and 0 <= y < LINHAS:
-						matriz[y][x] = Sand(temperatura=20.0)
+				if event.button == 1:
+					mouse_pressionado = True
+			elif event.type == pygame.MOUSEBUTTONUP:
+				if event.button == 1:
+					mouse_pressionado = False
+
+		if mouse_pressionado:
+			mx, my = pygame.mouse.get_pos()
+			x = mx // TAM_PIXEL
+			y = my // TAM_PIXEL
+			if 0 <= x < COLUNAS and 0 <= y < LINHAS:
+				matriz[y][x] = Sand(temperatura=1.0)
 
 		atualizar_areia(matriz)
 		desenhar_tela(screen, matriz)
