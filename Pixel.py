@@ -18,6 +18,10 @@ class Pixel(ABC):
         return self._cor
 
     @property
+    def estado(self) -> str:
+        return self._estado
+
+    @property
     def delta_temperatura(self) -> float:
         return self._delta_temperatura
 

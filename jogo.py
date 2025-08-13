@@ -7,6 +7,12 @@ from Agua import Agua
 
 # Exemplo: criar uma lista 10x10 cheia de instâncias de Ar
 
+
+def isSolid(pixel):
+	return pixel.estado == "solido"
+
+
+
 # Configurações do jogo
 TAM_PIXEL = 10
 LINHAS = 50
@@ -27,24 +33,44 @@ def atualizar_areia(matriz):
 	# Percorre de baixo para cima para simular queda
 	for y in range(LINHAS-2, -1, -1):
 		for x in range(COLUNAS):
+			import random
+			# Atualiza areia
 			if isinstance(matriz[y][x], Sand):
 				if isinstance(matriz[y+1][x], Ar):
-					# Troca com o pixel de baixo
 					matriz[y+1][x], matriz[y][x] = matriz[y][x], matriz[y+1][x]
-				if isinstance(matriz[y+1][x], Sand):
-					if(isinstance(matriz[y+1][x+1], Ar)):
-						matriz[y+1][x+1], matriz[y][x] = matriz[y][x], matriz[y+1][x+1]
-					elif isinstance(matriz[y+1][x-1], Ar):
-						matriz[y+1][x-1], matriz[y][x] = matriz[y][x], matriz[y+1][x-1]
+				elif x > 0 and isinstance(matriz[y+1][x-1], Ar):
+					matriz[y+1][x-1], matriz[y][x] = matriz[y][x], matriz[y+1][x-1]
+				elif x < COLUNAS-1 and isinstance(matriz[y+1][x+1], Ar):
+					matriz[y+1][x+1], matriz[y][x] = matriz[y][x], matriz[y+1][x+1]
 
+			# Atualiza água
 			if isinstance(matriz[y][x], Agua):
+				moved = False
+				# Tenta cair para baixo
 				if isinstance(matriz[y+1][x], Ar):
 					matriz[y+1][x], matriz[y][x] = matriz[y][x], matriz[y+1][x]
-				if isinstance(matriz[y+1][x], Agua) or isinstance(matriz[y+1][x], Sand):
-					if(isinstance(matriz[y][x+1], Ar)):
-						matriz[y][x+1], matriz[y][x] = matriz[y][x], matriz[y][x+1]
-					if isinstance(matriz[y][x-1], Ar):
-						matriz[y][x-1], matriz[y][x] = matriz[y][x], matriz[y][x-1]
+					moved = True
+				else:
+					# Tenta escorrer para os lados (aleatório)
+					dirs = []
+					if x > 0 and isinstance(matriz[y][x-1], Ar):
+						dirs.append(-1)
+					if x < COLUNAS-1 and isinstance(matriz[y][x+1], Ar):
+						dirs.append(1)
+					if dirs:
+						dx = random.choice(dirs)
+						matriz[y][x+dx], matriz[y][x] = matriz[y][x], matriz[y][x+dx]
+						moved = True
+				# Tenta escorrer diagonalmente se não moveu
+				if not moved:
+					diag_dirs = []
+					if x > 0 and isinstance(matriz[y+1][x-1], Ar):
+						diag_dirs.append(-1)
+					if x < COLUNAS-1 and isinstance(matriz[y+1][x+1], Ar):
+						diag_dirs.append(1)
+					if diag_dirs:
+						dx = random.choice(diag_dirs)
+						matriz[y+1][x+dx], matriz[y][x] = matriz[y][x], matriz[y+1][x+dx]
 
 def main():
 	pygame.init()
