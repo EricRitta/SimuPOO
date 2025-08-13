@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
 
 class Pixel(ABC):
-    def __init__(self, temperatura: float, cor: tuple[int,int,int], delta_temperatura: float):
+    def __init__(self, temperatura: float, delta_temperatura: float):
         self._temperatura = temperatura
-        self._cor = cor
         self._delta_temperatura = delta_temperatura
 
     @property
@@ -17,10 +16,6 @@ class Pixel(ABC):
     @property
     def cor(self) -> tuple[int,int,int]:
         return self._cor
-
-    @cor.setter
-    def cor(self, value: tuple[int,int,int]):
-        self._cor = value
 
     @property
     def delta_temperatura(self) -> float:
