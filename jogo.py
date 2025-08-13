@@ -3,6 +3,7 @@
 import pygame
 from Ar import Ar
 from Sand import Sand
+from Agua import Agua
 
 # Exemplo: criar uma lista 10x10 cheia de instâncias de Ar
 
@@ -36,30 +37,46 @@ def atualizar_areia(matriz):
 					elif isinstance(matriz[y+1][x-1], Ar):
 						matriz[y+1][x-1], matriz[y][x] = matriz[y][x], matriz[y+1][x-1]
 
+			if isinstance(matriz[y][x], Agua):
+				if isinstance(matriz[y+1][x], Ar):
+					matriz[y+1][x], matriz[y][x] = matriz[y][x], matriz[y+1][x]
+				if isinstance(matriz[y+1][x], Agua) or isinstance(matriz[y+1][x], Sand):
+					if(isinstance(matriz[y][x+1], Ar)):
+						matriz[y][x+1], matriz[y][x] = matriz[y][x], matriz[y][x+1]
+					if isinstance(matriz[y][x-1], Ar):
+						matriz[y][x-1], matriz[y][x] = matriz[y][x], matriz[y][x-1]
+
 def main():
 	pygame.init()
 	screen = pygame.display.set_mode((LARGURA, ALTURA))
 	pygame.display.set_caption('Jogo da Areia')
 	clock = pygame.time.Clock()
 	rodando = True
-	mouse_pressionado = False
+	mouse_esquerdo_pressionado = False
+	mouse_direito_pressionado = False
 	while rodando:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				rodando = False
 			elif event.type == pygame.MOUSEBUTTONDOWN:
 				if event.button == 1:
-					mouse_pressionado = True
+					mouse_esquerdo_pressionado = True
+				elif event.button == 3:
+					mouse_direito_pressionado = True
 			elif event.type == pygame.MOUSEBUTTONUP:
 				if event.button == 1:
-					mouse_pressionado = False
+					mouse_esquerdo_pressionado = False
+				elif event.button == 3:
+					mouse_direito_pressionado = False
 
-		if mouse_pressionado:
-			mx, my = pygame.mouse.get_pos()
-			x = mx // TAM_PIXEL
-			y = my // TAM_PIXEL
-			if 0 <= x < COLUNAS and 0 <= y < LINHAS:
+		mx, my = pygame.mouse.get_pos()
+		x = mx // TAM_PIXEL
+		y = my // TAM_PIXEL
+		if 0 <= x < COLUNAS and 0 <= y < LINHAS:
+			if mouse_esquerdo_pressionado:
 				matriz[y][x] = Sand(temperatura=20.0)
+			if mouse_direito_pressionado:
+				matriz[y][x] = Agua(temperatura=20.0)
 
 		atualizar_areia(matriz)
 		desenhar_tela(screen, matriz)
