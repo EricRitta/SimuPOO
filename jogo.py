@@ -36,26 +36,26 @@ def atualizar_areia(matriz):
 			import random
 			# Atualiza areia
 			if isinstance(matriz[y][x], Sand):
-				if isinstance(matriz[y+1][x], Ar):
+				if matriz[y+1][x].densidade < matriz[y][x].densidade:
 					matriz[y+1][x], matriz[y][x] = matriz[y][x], matriz[y+1][x]
-				elif x > 0 and isinstance(matriz[y+1][x-1], Ar):
+				elif x > 0 and matriz[y+1][x-1].densidade < matriz[y][x].densidade:
 					matriz[y+1][x-1], matriz[y][x] = matriz[y][x], matriz[y+1][x-1]
-				elif x < COLUNAS-1 and isinstance(matriz[y+1][x+1], Ar):
+				elif x < COLUNAS-1 and matriz[y+1][x+1].densidade < matriz[y][x].densidade:
 					matriz[y+1][x+1], matriz[y][x] = matriz[y][x], matriz[y+1][x+1]
 
 			# Atualiza água
 			if isinstance(matriz[y][x], Agua):
 				moved = False
 				# Tenta cair para baixo
-				if isinstance(matriz[y+1][x], Ar):
+				if matriz[y+1][x].densidade < matriz[y][x].densidade:
 					matriz[y+1][x], matriz[y][x] = matriz[y][x], matriz[y+1][x]
 					moved = True
 				else:
 					# Tenta escorrer para os lados (aleatório)
 					dirs = []
-					if x > 0 and isinstance(matriz[y][x-1], Ar):
+					if x > 0 and matriz[y][x-1].densidade < matriz[y][x].densidade:
 						dirs.append(-1)
-					if x < COLUNAS-1 and isinstance(matriz[y][x+1], Ar):
+					if x < COLUNAS-1 and matriz[y][x+1].densidade < matriz[y][x].densidade:
 						dirs.append(1)
 					if dirs:
 						dx = random.choice(dirs)

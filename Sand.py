@@ -6,6 +6,7 @@ class Sand(Pixel):
 		super().__init__(temperatura, delta_temperatura)
 		self._cor = (max(0, min(255, 255+random.randint(-10, 10))), max(0, min(255, 255+random.randint(-10, 10))), max(0, min(255, 0+random.randint(-10, 10)))) 
 		self._estado="solido"
+		self._densidade = 1600
 
 	@property
 	def cor(self) -> tuple[int, int, int]:

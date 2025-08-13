@@ -16,6 +16,10 @@ class Pixel(ABC):
     @property
     def cor(self) -> tuple[int,int,int]:
         return self._cor
+    
+    @property
+    def densidade(self) -> float:
+        return self._densidade
 
     @property
     def estado(self) -> str:

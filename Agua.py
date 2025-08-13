@@ -6,6 +6,7 @@ class Agua(Pixel):
 		super().__init__(temperatura, delta_temperatura)
 		self._cor = (0, 0, 255)
 		self._estado="liquido"
+		self._densidade = 1000
 
 	@property
 	def cor(self) -> tuple[int, int, int]:
