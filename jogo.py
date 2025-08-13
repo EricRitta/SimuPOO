@@ -30,6 +30,11 @@ def atualizar_areia(matriz):
 				if isinstance(matriz[y+1][x], Ar):
 					# Troca com o pixel de baixo
 					matriz[y+1][x], matriz[y][x] = matriz[y][x], matriz[y+1][x]
+				if isinstance(matriz[y+1][x], Sand):
+					if(isinstance(matriz[y+1][x+1], Ar)):
+						matriz[y+1][x+1], matriz[y][x] = matriz[y][x], matriz[y+1][x+1]
+					elif isinstance(matriz[y+1][x-1], Ar):
+						matriz[y+1][x-1], matriz[y][x] = matriz[y][x], matriz[y+1][x-1]
 
 def main():
 	pygame.init()
@@ -54,7 +59,7 @@ def main():
 			x = mx // TAM_PIXEL
 			y = my // TAM_PIXEL
 			if 0 <= x < COLUNAS and 0 <= y < LINHAS:
-				matriz[y][x] = Sand(temperatura=1.0)
+				matriz[y][x] = Sand(temperatura=20.0)
 
 		atualizar_areia(matriz)
 		desenhar_tela(screen, matriz)
