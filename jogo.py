@@ -1,6 +1,8 @@
 
 
 import pygame
+import random
+
 from Ar import Ar
 from Sand import Sand
 from Agua import Agua
@@ -29,53 +31,90 @@ def desenhar_tela(screen, matriz):
 			cor = matriz[y][x].cor
 			pygame.draw.rect(screen, cor, (x*TAM_PIXEL, y*TAM_PIXEL, TAM_PIXEL, TAM_PIXEL))
 
-def atualizar_areia(matriz):
-	# Percorre de baixo para cima para simular queda
+def atualizar_fisica(matriz):
+	
+	# Percorre de baixo para cima para simular física
 	for y in range(LINHAS-2, -1, -1):
 		for x in range(COLUNAS):
-			import random
-			# Atualiza areia
-			if isinstance(matriz[y][x], Sand):
-				if matriz[y+1][x].densidade < matriz[y][x].densidade:
+			pixel_atual = matriz[y][x]
+			
+			# Comportamento para SÓLIDOS
+			if pixel_atual.estado == "solido":
+				# Sólidos caem se houver algo menos denso embaixo (gás ou líquido)
+				if y < LINHAS-1 and matriz[y+1][x].densidade < pixel_atual.densidade:
 					matriz[y+1][x], matriz[y][x] = matriz[y][x], matriz[y+1][x]
-				elif x > 0 and matriz[y+1][x-1].densidade < matriz[y][x].densidade:
-					matriz[y+1][x-1], matriz[y][x] = matriz[y][x], matriz[y+1][x-1]
-				elif x < COLUNAS-1 and matriz[y+1][x+1].densidade < matriz[y][x].densidade:
-					matriz[y+1][x+1], matriz[y][x] = matriz[y][x], matriz[y+1][x+1]
-
-			# Atualiza água
-			if isinstance(matriz[y][x], Agua):
+				# Se não pode cair direto, tenta rolar para as diagonais
+				elif y < LINHAS-1:
+					dirs = []
+					if x > 0 and matriz[y+1][x-1].densidade < pixel_atual.densidade:
+						dirs.append(-1)
+					if x < COLUNAS-1 and matriz[y+1][x+1].densidade < pixel_atual.densidade:
+						dirs.append(1)
+					if dirs:
+						dx = random.choice(dirs)
+						matriz[y+1][x+dx], matriz[y][x] = matriz[y][x], matriz[y+1][x+dx]
+			
+			# Comportamento para LÍQUIDOS
+			elif pixel_atual.estado == "liquido":
 				moved = False
-				# Tenta cair para baixo
-				if matriz[y+1][x].densidade < matriz[y][x].densidade:
+				
+				# Líquidos caem se houver algo menos denso embaixo
+				if y < LINHAS-1 and matriz[y+1][x].densidade < pixel_atual.densidade:
 					matriz[y+1][x], matriz[y][x] = matriz[y][x], matriz[y+1][x]
 					moved = True
-				else:
-					# Tenta escorrer para os lados (aleatório)
+				
+				# Se não pode cair, tenta fluir horizontalmente (sempre tenta se espalhar)
+				if not moved:
 					dirs = []
-					if x > 0 and matriz[y][x-1].densidade < matriz[y][x].densidade:
+					if x > 0 and matriz[y][x-1].densidade < pixel_atual.densidade:
 						dirs.append(-1)
-					if x < COLUNAS-1 and matriz[y][x+1].densidade < matriz[y][x].densidade:
+					if x < COLUNAS-1 and matriz[y][x+1].densidade < pixel_atual.densidade:
 						dirs.append(1)
 					if dirs:
 						dx = random.choice(dirs)
 						matriz[y][x+dx], matriz[y][x] = matriz[y][x], matriz[y][x+dx]
 						moved = True
-				# Tenta escorrer diagonalmente se não moveu
-				if not moved:
+				
+				# Se ainda não moveu, tenta fluir diagonalmente para baixo
+				if not moved and y < LINHAS-1:
 					diag_dirs = []
-					if x > 0 and isinstance(matriz[y+1][x-1], Ar):
+					if x > 0 and matriz[y+1][x-1].densidade < pixel_atual.densidade:
 						diag_dirs.append(-1)
-					if x < COLUNAS-1 and isinstance(matriz[y+1][x+1], Ar):
+					if x < COLUNAS-1 and matriz[y+1][x+1].densidade < pixel_atual.densidade:
 						diag_dirs.append(1)
 					if diag_dirs:
 						dx = random.choice(diag_dirs)
 						matriz[y+1][x+dx], matriz[y][x] = matriz[y][x], matriz[y+1][x+dx]
+						moved = True
+				
+
+			
+			# Comportamento para GASOSOS
+			elif pixel_atual.estado == "gasoso":
+				# Gases fazem movimento aleatório de convecção (movimento sutil)
+				if random.random() < 0.05:  # 5% de chance de movimento
+					dirs = []
+					# Movimento aleatório, mas com tendência a subir
+					if x > 0:
+						dirs.append((-1, 0))  # esquerda
+					if x < COLUNAS-1:
+						dirs.append((1, 0))   # direita
+					if y > 0:
+						dirs.extend([(0, -1), (0, -1)])  # cima (dupla chance)
+					if y < LINHAS-1:
+						dirs.append((0, 1))   # baixo
+					
+					if dirs:
+						dx, dy = random.choice(dirs)
+						ny, nx = y + dy, x + dx
+						# Troca apenas com outros gases
+						if matriz[ny][nx].estado == "gasoso":
+							matriz[ny][nx], matriz[y][x] = matriz[y][x], matriz[ny][nx]
 
 def main():
 	pygame.init()
 	screen = pygame.display.set_mode((LARGURA, ALTURA))
-	pygame.display.set_caption('Jogo da Areia')
+	pygame.display.set_caption('Simulação Física - Esquerdo: Sólido | Direito: Líquido | R: Reset')
 	clock = pygame.time.Clock()
 	rodando = True
 	mouse_esquerdo_pressionado = False
@@ -84,6 +123,12 @@ def main():
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				rodando = False
+			elif event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_r:
+					# Reset da matriz - volta tudo para ar
+					for y in range(LINHAS):
+						for x in range(COLUNAS):
+							matriz[y][x] = Ar(temperatura=20.0)
 			elif event.type == pygame.MOUSEBUTTONDOWN:
 				if event.button == 1:
 					mouse_esquerdo_pressionado = True
@@ -104,7 +149,7 @@ def main():
 			if mouse_direito_pressionado:
 				matriz[y][x] = Agua(temperatura=20.0)
 
-		atualizar_areia(matriz)
+		atualizar_fisica(matriz)
 		desenhar_tela(screen, matriz)
 		pygame.display.flip()
 		clock.tick(60)
