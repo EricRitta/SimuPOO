@@ -119,6 +119,10 @@ def main():
 	rodando = True
 	mouse_esquerdo_pressionado = False
 	mouse_direito_pressionado = False
+	tempo_ultimo_bloco_esq = 0
+	tempo_ultimo_bloco_dir = 0
+	DELAY_BLOCO_MS = 30 
+	
 	while rodando:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -144,10 +148,15 @@ def main():
 		x = mx // TAM_PIXEL
 		y = my // TAM_PIXEL
 		if 0 <= x < COLUNAS and 0 <= y < LINHAS:
+			agora = pygame.time.get_ticks()
 			if mouse_esquerdo_pressionado:
-				matriz[y][x] = Sand(temperatura=20.0)
+				if agora - tempo_ultimo_bloco_esq > DELAY_BLOCO_MS:
+					matriz[y][x] = Sand(temperatura=20.0)
+					tempo_ultimo_bloco_esq = agora
 			if mouse_direito_pressionado:
-				matriz[y][x] = Agua(temperatura=20.0)
+				if agora - tempo_ultimo_bloco_dir > DELAY_BLOCO_MS:
+					matriz[y][x] = Agua(temperatura=20.0)
+					tempo_ultimo_bloco_dir = agora
 
 		atualizar_fisica(matriz)
 		desenhar_tela(screen, matriz)
