@@ -25,9 +25,12 @@ ALTURA = LINHAS * TAM_PIXEL
 # Inicializa a matriz de pixels (tudo ar)
 matriz = [[Ar(temperatura=20.0) for _ in range(COLUNAS)] for _ in range(LINHAS)]
 
-def desenhar_tela(screen, matriz, bloco_selecionado):
+def desenhar_tela(screen, matriz, bloco_selecionado, temperatura_pixel):
 	# Barra de seleção de blocos
 	barra_altura = 30
+	# Desenha o retângulo de fundo do cabeçalho
+	pygame.draw.rect(screen, (230, 230, 230), (0, 0, LARGURA, barra_altura))
+
 	opcoes = [
 		("Areia", (194, 178, 128)),
 		("Água", (0, 0, 255)),
@@ -41,6 +44,12 @@ def desenhar_tela(screen, matriz, bloco_selecionado):
 		font = pygame.font.SysFont(None, 20)
 		txt = font.render(nome, True, (0,0,0))
 		screen.blit(txt, (i*60+5, 5))
+
+	# Indicador de temperatura
+	font = pygame.font.SysFont(None, 24)
+	temp_text = font.render(f"Temp: {int(temperatura_pixel)}°C", True, (255,0,0))
+	screen.blit(temp_text, (400, 5))
+
 	# Campo de jogo
 	for y in range(LINHAS):
 		for x in range(COLUNAS):
@@ -139,7 +148,13 @@ def main():
 	DELAY_BLOCO_MS = 30
 	bloco_selecionado = "Areia"
 	opcoes = ["Areia", "Água", "Ar"]
-	
+
+	global temperatura_pixel
+	temperatura_pixel = 20.0
+	temperatura_min = -50.0
+	temperatura_max = 200.0
+	temperatura_step = 1.0
+
 	while rodando:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -159,6 +174,10 @@ def main():
 							bloco_selecionado = opcoes[idx]
 					else:
 						mouse_pressionado = True
+				elif event.button == 4:  # Scroll up
+					temperatura_pixel = min(temperatura_pixel + temperatura_step, temperatura_max)
+				elif event.button == 5:  # Scroll down
+					temperatura_pixel = max(temperatura_pixel - temperatura_step, temperatura_min)
 			elif event.type == pygame.MOUSEBUTTONUP:
 				if event.button == 1:
 					mouse_pressionado = False
@@ -171,15 +190,15 @@ def main():
 				agora = pygame.time.get_ticks()
 				if agora - tempo_ultimo_bloco > DELAY_BLOCO_MS:
 					if bloco_selecionado == "Areia":
-						matriz[y][x] = Sand(temperatura=20.0)
+						matriz[y][x] = Sand(temperatura=temperatura_pixel)
 					elif bloco_selecionado == "Água":
-						matriz[y][x] = Agua(temperatura=20.0)
+						matriz[y][x] = Agua(temperatura=temperatura_pixel)
 					elif bloco_selecionado == "Ar":
-						matriz[y][x] = Ar(temperatura=20.0)
+						matriz[y][x] = Ar(temperatura=temperatura_pixel)
 					tempo_ultimo_bloco = agora
 
 		atualizar_fisica(matriz)
-		desenhar_tela(screen, matriz, bloco_selecionado)
+		desenhar_tela(screen, matriz, bloco_selecionado, temperatura_pixel)
 		pygame.display.flip()
 		clock.tick(60)
 	pygame.quit()
