@@ -25,11 +25,27 @@ ALTURA = LINHAS * TAM_PIXEL
 # Inicializa a matriz de pixels (tudo ar)
 matriz = [[Ar(temperatura=20.0) for _ in range(COLUNAS)] for _ in range(LINHAS)]
 
-def desenhar_tela(screen, matriz):
+def desenhar_tela(screen, matriz, bloco_selecionado):
+	# Barra de seleção de blocos
+	barra_altura = 30
+	opcoes = [
+		("Areia", (194, 178, 128)),
+		("Água", (0, 0, 255)),
+		("Ar", (200, 200, 200)),
+	]
+	for i, (nome, cor) in enumerate(opcoes):
+		rect = pygame.Rect(i*60, 0, 60, barra_altura)
+		pygame.draw.rect(screen, cor, rect)
+		if bloco_selecionado == nome:
+			pygame.draw.rect(screen, (255,0,0), rect, 3)
+		font = pygame.font.SysFont(None, 20)
+		txt = font.render(nome, True, (0,0,0))
+		screen.blit(txt, (i*60+5, 5))
+	# Campo de jogo
 	for y in range(LINHAS):
 		for x in range(COLUNAS):
 			cor = matriz[y][x].cor
-			pygame.draw.rect(screen, cor, (x*TAM_PIXEL, y*TAM_PIXEL, TAM_PIXEL, TAM_PIXEL))
+			pygame.draw.rect(screen, cor, (x*TAM_PIXEL, y*TAM_PIXEL+barra_altura, TAM_PIXEL, TAM_PIXEL))
 
 def atualizar_fisica(matriz):
 	
@@ -113,15 +129,16 @@ def atualizar_fisica(matriz):
 
 def main():
 	pygame.init()
-	screen = pygame.display.set_mode((LARGURA, ALTURA))
-	pygame.display.set_caption('Simulação Física - Esquerdo: Sólido | Direito: Líquido | R: Reset')
+	barra_altura = 30
+	screen = pygame.display.set_mode((LARGURA, ALTURA+barra_altura))
+	pygame.display.set_caption('Simulação Física - Selecione o bloco na barra | R: Reset')
 	clock = pygame.time.Clock()
 	rodando = True
-	mouse_esquerdo_pressionado = False
-	mouse_direito_pressionado = False
-	tempo_ultimo_bloco_esq = 0
-	tempo_ultimo_bloco_dir = 0
-	DELAY_BLOCO_MS = 30 
+	mouse_pressionado = False
+	tempo_ultimo_bloco = 0
+	DELAY_BLOCO_MS = 30
+	bloco_selecionado = "Areia"
+	opcoes = ["Areia", "Água", "Ar"]
 	
 	while rodando:
 		for event in pygame.event.get():
@@ -129,37 +146,40 @@ def main():
 				rodando = False
 			elif event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_r:
-					# Reset da matriz - volta tudo para ar
 					for y in range(LINHAS):
 						for x in range(COLUNAS):
 							matriz[y][x] = Ar(temperatura=20.0)
 			elif event.type == pygame.MOUSEBUTTONDOWN:
 				if event.button == 1:
-					mouse_esquerdo_pressionado = True
-				elif event.button == 3:
-					mouse_direito_pressionado = True
+					mx, my = pygame.mouse.get_pos()
+					# Clique na barra de seleção
+					if my < barra_altura:
+						idx = mx // 60
+						if 0 <= idx < len(opcoes):
+							bloco_selecionado = opcoes[idx]
+					else:
+						mouse_pressionado = True
 			elif event.type == pygame.MOUSEBUTTONUP:
 				if event.button == 1:
-					mouse_esquerdo_pressionado = False
-				elif event.button == 3:
-					mouse_direito_pressionado = False
+					mouse_pressionado = False
 
 		mx, my = pygame.mouse.get_pos()
 		x = mx // TAM_PIXEL
-		y = my // TAM_PIXEL
-		if 0 <= x < COLUNAS and 0 <= y < LINHAS:
-			agora = pygame.time.get_ticks()
-			if mouse_esquerdo_pressionado:
-				if agora - tempo_ultimo_bloco_esq > DELAY_BLOCO_MS:
-					matriz[y][x] = Sand(temperatura=20.0)
-					tempo_ultimo_bloco_esq = agora
-			if mouse_direito_pressionado:
-				if agora - tempo_ultimo_bloco_dir > DELAY_BLOCO_MS:
-					matriz[y][x] = Agua(temperatura=20.0)
-					tempo_ultimo_bloco_dir = agora
+		y = (my - barra_altura) // TAM_PIXEL
+		if mouse_pressionado and my >= barra_altura:
+			if 0 <= x < COLUNAS and 0 <= y < LINHAS:
+				agora = pygame.time.get_ticks()
+				if agora - tempo_ultimo_bloco > DELAY_BLOCO_MS:
+					if bloco_selecionado == "Areia":
+						matriz[y][x] = Sand(temperatura=20.0)
+					elif bloco_selecionado == "Água":
+						matriz[y][x] = Agua(temperatura=20.0)
+					elif bloco_selecionado == "Ar":
+						matriz[y][x] = Ar(temperatura=20.0)
+					tempo_ultimo_bloco = agora
 
 		atualizar_fisica(matriz)
-		desenhar_tela(screen, matriz)
+		desenhar_tela(screen, matriz, bloco_selecionado)
 		pygame.display.flip()
 		clock.tick(60)
 	pygame.quit()
