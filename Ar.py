@@ -2,7 +2,8 @@ from Pixel import Pixel
 import random
 
 class Ar(Pixel):
-	def __init__(self, temperatura: float, delta_temperatura: float = 0.1):
+	def __init__(self, temperatura: float, delta_temperatura: float = 0.5):
+		# Ar tem alta difusão térmica (troca calor rápido)
 		super().__init__(temperatura, delta_temperatura)
 		self._cor = (150, 255, 255)  
 		self._estado="gasoso"

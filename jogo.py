@@ -58,6 +58,25 @@ def desenhar_tela(screen, matriz, bloco_selecionado, temperatura_pixel):
 
 def atualizar_fisica(matriz):
 	
+	# Troca de temperatura entre vizinhos
+	for y in range(LINHAS):
+		for x in range(COLUNAS):
+			pixel = matriz[y][x]
+			vizinhos = []
+			for dy in [-1, 0, 1]:
+				for dx in [-1, 0, 1]:
+					if dx == 0 and dy == 0:
+						continue
+					ny, nx = y + dy, x + dx
+					if 0 <= ny < LINHAS and 0 <= nx < COLUNAS:
+						vizinhos.append(matriz[ny][nx])
+			for vizinho in vizinhos:
+				# Troca proporcional ao delta_temperatura de cada pixel
+				temp_diff = pixel.temperatura - vizinho.temperatura
+				troca = temp_diff * 0.25 * min(pixel.delta_temperatura, vizinho.delta_temperatura)
+				pixel.temperatura -= troca
+				vizinho.temperatura += troca
+
 	# Percorre de baixo para cima para simular física
 	for y in range(LINHAS-2, -1, -1):
 		for x in range(COLUNAS):

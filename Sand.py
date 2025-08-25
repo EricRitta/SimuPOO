@@ -2,7 +2,8 @@ from Pixel import Pixel
 import random
 
 class Sand(Pixel):
-	def __init__(self, temperatura: float, delta_temperatura: float = 0.1):
+	def __init__(self, temperatura: float, delta_temperatura: float = 0.05):
+		# Areia (sólido granular) troca calor mais devagar
 		super().__init__(temperatura, delta_temperatura)
 		self._cor = (max(0, min(255, 255+random.randint(-10, 10))), max(0, min(255, 255+random.randint(-10, 10))), max(0, min(255, 0+random.randint(-10, 10)))) 
 		self._estado="solido"
