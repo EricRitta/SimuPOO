@@ -2,9 +2,9 @@ from Pixel import Pixel
 import random
 
 class Agua(Pixel):
-	def __init__(self, temperatura: float, delta_temperatura: float = 0.2):
-		# Água tem condutividade térmica intermediária
-		super().__init__(temperatura, delta_temperatura)
+	def __init__(self, temperatura: float, delta_temperatura: float = 0.2, capacidade_termica: float = 3.0):
+		# Água tem condutividade térmica intermediária e boa capacidade térmica
+		super().__init__(temperatura, delta_temperatura, capacidade_termica)
 		self._cor = (0, 0, 255)
 		self._estado="liquido"
 		self._densidade = 1000

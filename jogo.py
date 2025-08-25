@@ -71,9 +71,11 @@ def atualizar_fisica(matriz):
 					if 0 <= ny < LINHAS and 0 <= nx < COLUNAS:
 						vizinhos.append(matriz[ny][nx])
 			for vizinho in vizinhos:
-				# Troca proporcional ao delta_temperatura de cada pixel
+				# Troca proporcional ao delta_temperatura e capacidade térmica
 				temp_diff = pixel.temperatura - vizinho.temperatura
-				troca = temp_diff * 0.25 * min(pixel.delta_temperatura, vizinho.delta_temperatura)
+				# Fator de troca leva em conta a capacidade térmica média
+				cap_media = (pixel.capacidade_termica + vizinho.capacidade_termica) / 2
+				troca = temp_diff * 0.25 * min(pixel.delta_temperatura, vizinho.delta_temperatura) / cap_media
 				pixel.temperatura -= troca
 				vizinho.temperatura += troca
 
@@ -195,8 +197,8 @@ def main():
 	global temperatura_pixel
 	temperatura_pixel = 20.0
 	temperatura_min = -50.0
-	temperatura_max = 200.0
-	temperatura_step = 1.0
+	temperatura_max = 2000.0
+	temperatura_step = 5.0
 
 	while rodando:
 		for event in pygame.event.get():
