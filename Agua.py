@@ -11,11 +11,16 @@ class Agua(Pixel):
 
 	@property
 	def cor(self) -> tuple[int, int, int]:
-		return self._cor
+		return tuple([max(0, min(255, self._cor[0]+self._temperatura)), max(0, min(255, self._cor[1]-self._temperatura)), max(0, min(255, self._cor[2]-self._temperatura))])
 
 	@property
 	def estado(self) -> str:
-		return self._estado
+		if self.temperatura < 0:
+			return "solido"
+		elif self.temperatura < 100:
+			return "liquido"
+		else:
+			return "gasoso"
 
 	def atualizar(self):
 		# Exemplo simples: aumenta a temperatura

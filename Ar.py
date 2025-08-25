@@ -14,6 +14,15 @@ class Ar(Pixel):
 		return tuple([max(0, min(255, self._cor[0]+self._temperatura)), max(0, min(255, self._cor[1]-self._temperatura)), max(0, min(255, self._cor[2]-self._temperatura))])
 
 	@property
+	def estado(self) -> str:
+		if self.temperatura < -210:
+			return "solido"
+		elif self.temperatura < -190:
+			return "liquido"
+		else:
+			return "gasoso"
+
+	@property
 	def densidade(self) -> float:
 		return self._densidade+self._temperatura * 0.00001 
 

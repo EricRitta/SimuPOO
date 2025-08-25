@@ -6,7 +6,6 @@ class Sand(Pixel):
 		# Areia (sólido granular) troca calor mais devagar e armazena mais calor
 		super().__init__(temperatura, delta_temperatura, capacidade_termica)
 		self._cor = (max(0, min(255, 255+random.randint(-10, 10))), max(0, min(255, 255+random.randint(-10, 10))), max(0, min(255, 0+random.randint(-10, 10)))) 
-		self._estado="solido"
 		self._densidade = 1600
 
 	@property
@@ -15,7 +14,12 @@ class Sand(Pixel):
 
 	@property
 	def estado(self) -> str:
-		return self._estado
+		if self.temperatura < 200:
+			return "solido"
+		elif self.temperatura < 1000:
+			return "liquido"
+		else:
+			return "gasoso"
 
 	def atualizar(self):
 		# Exemplo simples: aumenta a temperatura
