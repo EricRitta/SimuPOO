@@ -116,25 +116,49 @@ def atualizar_fisica(matriz):
 			
 			# Comportamento para GASOSOS
 			elif pixel_atual.estado == "gasoso":
-				# Gases fazem movimento aleatório de convecção (movimento sutil)
-				if random.random() < 0.05:  # 5% de chance de movimento
-					dirs = []
-					# Movimento aleatório, mas com tendência a subir
-					if x > 0:
-						dirs.append((-1, 0))  # esquerda
-					if x < COLUNAS-1:
-						dirs.append((1, 0))   # direita
-					if y > 0:
-						dirs.extend([(0, -1), (0, -1)])  # cima (dupla chance)
-					if y < LINHAS-1:
-						dirs.append((0, 1))   # baixo
-					
-					if dirs:
-						dx, dy = random.choice(dirs)
-						ny, nx = y + dy, x + dx
-						# Troca apenas com outros gases
-						if matriz[ny][nx].estado == "gasoso":
-							matriz[ny][nx], matriz[y][x] = matriz[y][x], matriz[ny][nx]
+				# Movimento suave para gases
+				if random.random() < 0.2:
+					moved = False
+					# Gás mais denso desce
+					if y < LINHAS-1 and matriz[y+1][x].estado == "gasoso" and matriz[y+1][x].densidade > pixel_atual.densidade:
+						matriz[y+1][x], matriz[y][x] = matriz[y][x], matriz[y+1][x]
+						moved = True
+					# Gás menos denso sobe
+					elif y > 0 and matriz[y-1][x].estado == "gasoso" and matriz[y-1][x].densidade < pixel_atual.densidade:
+						matriz[y-1][x], matriz[y][x] = matriz[y][x], matriz[y-1][x]
+						moved = True
+					# Diagonais para baixo (mais denso)
+					elif y < LINHAS-1:
+						diag_dirs = []
+						if x > 0 and matriz[y+1][x-1].estado == "gasoso" and matriz[y+1][x-1].densidade > pixel_atual.densidade:
+							diag_dirs.append(-1)
+						if x < COLUNAS-1 and matriz[y+1][x+1].estado == "gasoso" and matriz[y+1][x+1].densidade > pixel_atual.densidade:
+							diag_dirs.append(1)
+						if diag_dirs:
+							dx = random.choice(diag_dirs)
+							matriz[y+1][x+dx], matriz[y][x] = matriz[y][x], matriz[y+1][x+dx]
+							moved = True
+					# Diagonais para cima (menos denso)
+					elif y > 0:
+						diag_dirs = []
+						if x > 0 and matriz[y-1][x-1].estado == "gasoso" and matriz[y-1][x-1].densidade < pixel_atual.densidade:
+							diag_dirs.append(-1)
+						if x < COLUNAS-1 and matriz[y-1][x+1].estado == "gasoso" and matriz[y-1][x+1].densidade < pixel_atual.densidade:
+							diag_dirs.append(1)
+						if diag_dirs:
+							dx = random.choice(diag_dirs)
+							matriz[y-1][x+dx], matriz[y][x] = matriz[y][x], matriz[y-1][x+dx]
+							moved = True
+					# Movimento lateral aleatório se não moveu
+					if not moved:
+						dirs = []
+						if x > 0 and matriz[y][x-1].estado == "gasoso":
+							dirs.append(-1)
+						if x < COLUNAS-1 and matriz[y][x+1].estado == "gasoso":
+							dirs.append(1)
+						if dirs:
+							dx = random.choice(dirs)
+							matriz[y][x+dx], matriz[y][x] = matriz[y][x], matriz[y][x+dx]
 
 def main():
 	pygame.init()
