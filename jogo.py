@@ -196,7 +196,7 @@ def main():
 
 	global temperatura_pixel
 	temperatura_pixel = 20.0
-	temperatura_min = -50.0
+	temperatura_min = -500.0
 	temperatura_max = 2000.0
 	temperatura_step = 5.0
 
