@@ -25,10 +25,11 @@ class Chunk:
     def _removeParticle(self, gridPosition: Vector2):
         grid_X = gridPosition.X
         grid_Y = gridPosition.Y
- 
-        self.particleCount -= 1
-        self.GRID[grid_Y][grid_X] = None
-        self.Active_Particles.discard((grid_X, grid_Y))
+        
+        if self.GRID[grid_Y][grid_X] is not None:
+            self.particleCount -= 1
+            self.GRID[grid_Y][grid_X] = None
+            self.Active_Particles.discard((grid_X, grid_Y))
 
         if self.particleCount <= 0:
             self.particleCount = 0
