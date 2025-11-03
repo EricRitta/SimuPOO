@@ -3,8 +3,8 @@ from utils import Vector2
 import random
 
 class MovableSolid(Particle):
-    def __init__(self, name: str, color: tuple[int, int, int, int], density: float, heat_transfer_rate: float):
-        super().__init__(name, color, density, heat_transfer_rate)
+    def __init__(self, name: str, color: tuple[int, int, int, int], density: float, heat_capacity: float, heat_conductivity: float):
+        super().__init__(name, color, density, heat_capacity, heat_conductivity)
 
     def update(self, WORLD, position):
         liquidMove = self._inLiquid_movement(WORLD, position)

@@ -1,8 +1,8 @@
 from particles.base import Particle
 
 class ImmovableSolid(Particle):
-    def __init__(self, name: str, color: tuple[int, int, int, int], density: float, heat_transfer_rate: float):
-        super().__init__(name, color, density, heat_transfer_rate)
+    def __init__(self, name: str, color: tuple[int, int, int, int], density: float, heat_capacity: float, heat_conductivity: float):
+        super().__init__(name, color, density, heat_capacity, heat_conductivity)
         self.movedThisFrame = False
         self.isActive = False
 

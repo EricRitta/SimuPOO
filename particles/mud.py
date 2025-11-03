@@ -8,5 +8,6 @@ class Mud(MovableSolid):
             "Mud",                                  # Particle Name 
             (110, 100, 70, 15),                     # Particle Color tuple[RED, GREEN, BLUE, VARIATION]
             3,                                      # Particle Density
-            0.1,                                    # Particle Heat Transfer Rate
+            1.0,                                    # Particle Heat Capacity
+            0.15,                                   # Particle Heat Conductivity
         )
