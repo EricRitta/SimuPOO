@@ -16,7 +16,7 @@ def isSolid(pixel):
 
 
 # Configurações do jogo
-TAM_PIXEL = 10
+TAM_PIXEL = 30
 LINHAS = 50
 COLUNAS = 50
 LARGURA = COLUNAS * TAM_PIXEL
@@ -182,71 +182,79 @@ def atualizar_fisica(matriz):
 							matriz[y][x+dx], matriz[y][x] = matriz[y][x], matriz[y][x+dx]
 
 def main():
-	pygame.init()
-	barra_altura = 30
-	screen = pygame.display.set_mode((LARGURA, ALTURA+barra_altura))
-	pygame.display.set_caption('Simulação Física - Selecione o bloco na barra | R: Reset')
-	clock = pygame.time.Clock()
-	rodando = True
-	mouse_pressionado = False
-	tempo_ultimo_bloco = 0
-	DELAY_BLOCO_MS = 30
-	bloco_selecionado = "Areia"
-	opcoes = ["Areia", "Água", "Ar"]
+    pygame.init()
+    barra_altura = 30
+    screen = pygame.display.set_mode((LARGURA, ALTURA+barra_altura))
+    pygame.display.set_caption('Simulação Física - Selecione o bloco na barra | R: Reset')
+    clock = pygame.time.Clock()
+    rodando = True
+    mouse_pressionado = False
+    tempo_ultimo_bloco = 0
+    DELAY_BLOCO_MS = 30
+    bloco_selecionado = "Areia"
+    opcoes = ["Areia", "Água", "Ar"]
 
-	global temperatura_pixel
-	temperatura_pixel = 20.0
-	temperatura_min = -500.0
-	temperatura_max = 2000.0
-	temperatura_step = 5.0
+    global temperatura_pixel
+    temperatura_pixel = 20.0
+    temperatura_min = -500.0
+    temperatura_max = 2000.0
+    temperatura_step = 5.0
 
-	while rodando:
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				rodando = False
-			elif event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_r:
-					for y in range(LINHAS):
-						for x in range(COLUNAS):
-							matriz[y][x] = Ar(temperatura=20.0)
-			elif event.type == pygame.MOUSEBUTTONDOWN:
-				if event.button == 1:
-					mx, my = pygame.mouse.get_pos()
-					# Clique na barra de seleção
-					if my < barra_altura:
-						idx = mx // 60
-						if 0 <= idx < len(opcoes):
-							bloco_selecionado = opcoes[idx]
-					else:
-						mouse_pressionado = True
-				elif event.button == 4:  # Scroll up
-					temperatura_pixel = min(temperatura_pixel + temperatura_step, temperatura_max)
-				elif event.button == 5:  # Scroll down
-					temperatura_pixel = max(temperatura_pixel - temperatura_step, temperatura_min)
-			elif event.type == pygame.MOUSEBUTTONUP:
-				if event.button == 1:
-					mouse_pressionado = False
+    while rodando:
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_r]:
+            for y in range(LINHAS):
+                for x in range(COLUNAS):
+                    matriz[y][x] = Ar(temperatura=20.0)
+        if pressed[pygame.K_z]:
+            temperatura_pixel = min(temperatura_pixel + temperatura_step, temperatura_max)
+        if pressed[pygame.K_x]:
+            temperatura_pixel = max(temperatura_pixel - temperatura_step, temperatura_min)
 
-		mx, my = pygame.mouse.get_pos()
-		x = mx // TAM_PIXEL
-		y = (my - barra_altura) // TAM_PIXEL
-		if mouse_pressionado and my >= barra_altura:
-			if 0 <= x < COLUNAS and 0 <= y < LINHAS:
-				agora = pygame.time.get_ticks()
-				if agora - tempo_ultimo_bloco > DELAY_BLOCO_MS:
-					if bloco_selecionado == "Areia":
-						matriz[y][x] = Sand(temperatura=temperatura_pixel)
-					elif bloco_selecionado == "Água":
-						matriz[y][x] = Agua(temperatura=temperatura_pixel)
-					elif bloco_selecionado == "Ar":
-						matriz[y][x] = Ar(temperatura=temperatura_pixel)
-					tempo_ultimo_bloco = agora
 
-		atualizar_fisica(matriz)
-		desenhar_tela(screen, matriz, bloco_selecionado, temperatura_pixel)
-		pygame.display.flip()
-		clock.tick(60)
-	pygame.quit()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                rodando = False
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    mx, my = pygame.mouse.get_pos()
+                    # Clique na barra de seleção
+                    if my < barra_altura:
+                        idx = mx // 60
+                        if 0 <= idx < len(opcoes):
+                            bloco_selecionado = opcoes[idx]
+                    else:
+                        mouse_pressionado = True
+                elif event.button == 4:  # Scroll up
+                    temperatura_pixel = min(temperatura_pixel + temperatura_step, temperatura_max)
+                elif event.button == 5:  # Scroll down
+                    temperatura_pixel = max(temperatura_pixel - temperatura_step, temperatura_min)
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    mouse_pressionado = False
+
+        mx, my = pygame.mouse.get_pos()
+        x = mx // TAM_PIXEL
+        y = (my - barra_altura) // TAM_PIXEL
+        if mouse_pressionado and my >= barra_altura:
+            if 0 <= x < COLUNAS and 0 <= y < LINHAS:
+                agora = pygame.time.get_ticks()
+                if agora - tempo_ultimo_bloco > DELAY_BLOCO_MS:
+                    if bloco_selecionado == "Areia":
+                        matriz[y][x] = Sand(temperatura=temperatura_pixel)
+                    elif bloco_selecionado == "Água":
+                        matriz[y][x] = Agua(temperatura=temperatura_pixel)
+                    elif bloco_selecionado == "Ar":
+                        matriz[y][x] = Ar(temperatura=temperatura_pixel)
+                    tempo_ultimo_bloco = agora
+
+        atualizar_fisica(matriz)
+        desenhar_tela(screen, matriz, bloco_selecionado, temperatura_pixel)
+        pygame.display.flip()
+        clock.tick(60)
+    pygame.quit()
 
 if __name__ == '__main__':
 	main()
