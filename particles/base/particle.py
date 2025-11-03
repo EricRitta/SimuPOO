@@ -3,11 +3,12 @@ import utils
 import random
 
 class Particle(ABC):
-    def __init__(self, name: str, color: tuple[int, int, int, int], density: float, heat_transfer_rate: float):
+    def __init__(self, name: str, color: tuple[int, int, int, int], density: float, heat_capacity: float, heat_conductivity: float):
         # Constantes defaults
         self.NAME = name
         self.DENSITY = density
-        self.HEAT_TRANSFER_RATE = heat_transfer_rate
+        self.HEAT_CAPACITY = heat_capacity
+        self.HEAT_CONDUCTIVITY = heat_conductivity
         self._COLOR = (
             max(0, min(255, color[0] + random.randint(-color[3], color[3]))),
             max(0, min(255, color[1] + random.randint(-color[3], color[3]))),
