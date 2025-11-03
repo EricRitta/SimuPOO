@@ -19,7 +19,6 @@ class Sand(MovableSolid):
             vector = Vector2(position.X + cx, position.Y + cy)
             foundParticle = WORLD.getParticle(vector)
             if foundParticle and hasattr(foundParticle, "VISCOSITY"):
-                WORLD.setParticle(None, vector)
                 WORLD.killAndReplace(position, "Mud")
                 return True
 
