@@ -131,7 +131,7 @@ class World:
     ### -------------------------------------------------------------------------------------------------
 
 
-    # MÉTODOS DAS PARTICULAS
+    ### MÉTODOS DAS PARTICULAS --------------------------------------------------------------------------
     def killAndMove(self, fromPos: Vector2, toPos: Vector2) -> bool:
         particle = self.getParticle(fromPos)
         if not particle: return False
@@ -197,3 +197,55 @@ class World:
                 particle._dead_frames = 0
                 particle.isActive = True
                 self.Chunks[chunk_y][chunk_x].Active_Particles.add((grid_x, grid_y))
+
+    #-----------------------------------------------------------------------------------------------------
+
+
+    
+    # MÉTODO DA TEMPERATURA
+    def updateHeat(self):
+        pass
+
+    def disperseHeat(self, position: Vector2):
+        particle = self.getParticle(position)
+        if not particle: return
+        
+        # Offset dos vizinhos
+        offsets = [(-1,-1), (0,-1), (1,-1), (-1,0), (1,0), (-1,1), (0,1), (1,1)]
+        
+        temp_sum = 0
+        count = 0
+        
+        # médizinha das temperatura pai
+        for dx, dy in offsets:
+            nx = position.X + dx
+            ny = position.Y + dy
+            
+            if not (0 <= nx < self.WIDTH and 0 <= ny < self.HEIGTH):
+                continue
+            
+            # odeio ficar fazendo isso
+            chunk_x = nx // self.CHUNK_SIZE
+            chunk_y = ny // self.CHUNK_SIZE
+            grid_x = nx % self.CHUNK_SIZE
+            grid_y = ny % self.CHUNK_SIZE
+            
+            neighbor = self.Chunks[chunk_y][chunk_x].GRID[grid_y][grid_x]
+            
+            toSumTemp = 20
+            if neighbor is not None:
+                toSumTemp = neighbor.Temperature
+            temp_sum += toSumTemp
+            count += 1
+
+        
+        # aplicação
+        if count > 0:
+            avg_temp = temp_sum / count
+            temp_difference = avg_temp - particle.Temperature
+            
+            heat_change = temp_difference * particle.HEAT_CONDUCTIVITY / particle.HEAT_CAPACITY
+            particle.Temperature += heat_change
+
+    def wakeUpHeatNeighbors(self):
+        pass
