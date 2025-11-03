@@ -60,7 +60,11 @@ class Renderer:
         # World grid
         world_width = int(self.WORLD.WIDTH * self.cell_size)
         world_height = int(self.WORLD.HEIGTH * self.cell_size)
-        pygame.draw.rect(self.screen, self.BACKGROUND_COLOR, (int(self.offset_X), int(self.offset_Y), world_width, world_height))
+        pygame.draw.rect(
+            self.screen, 
+            self.BACKGROUND_COLOR, 
+            (int(self.offset_X), int(self.offset_Y), world_width, world_height)
+        )
 
         # Renderização direta das partículas - sem cache intermediário
         for chunk_Y in range(self.WORLD.Chunks_Quantity_Y - 1, -1, -1):
@@ -91,44 +95,31 @@ class Renderer:
         self.offset_Y = ui_bar_height + (available_height - (self.WORLD.HEIGTH * self.cell_size)) / 2
 
     def _render_chunk(self, chunk):
-        # Início da conversão para coordenada mundial
+        # Inicio da conversal para coordenada mundial
         base_x = chunk.Position.X * self.WORLD.CHUNK_SIZE
         base_y = chunk.Position.Y * self.WORLD.CHUNK_SIZE
         
-        # Pre-calcular valores constantes
-        cell_size = self.cell_size
-        offset_X = self.offset_X
-        offset_Y = self.offset_Y
-        chunk_size = self.WORLD.CHUNK_SIZE
-        screen = self.screen
-        
-        # Escolhe método de renderização baseado no tamanho da célula
-        use_fill = cell_size <= 2
-        
         # Itera pelas células do chunk
-        for grid_y in range(chunk_size):
-            # Otimização: calcula valores de Y uma vez por linha
+        for grid_y in range(self.WORLD.CHUNK_SIZE):
             world_y = base_y + grid_y
-            screen_y = offset_Y + (world_y * cell_size)
-            next_y = int(screen_y + cell_size)
-            screen_y_int = int(screen_y)
-            height = max(1, next_y - screen_y_int)
-            
-            for grid_x in range(chunk_size):
-                particle = chunk.GRID[grid_y][grid_x]
-                
-                if particle is not None:
-                    # Posição mundial da partícula
-                    world_x = base_x + grid_x
-                    
-                    # Converte para coordenadas da tela
-                    screen_x = offset_X + (world_x * cell_size)
-                    next_x = int(screen_x + cell_size)
-                    screen_x_int = int(screen_x)
-                    width = max(1, next_x - screen_x_int)
+            screen_y = self.offset_Y + (world_y * self.cell_size)
+            screen_y_INT = int(screen_y)
+            next_y = int(screen_y + self.cell_size)
+            height = max(1, next_y - screen_y_INT)
 
-                    # Renderiza diretamente
-                    if use_fill:
-                        screen.fill(particle.Color, (screen_x_int, screen_y_int, width, height))
-                    else:
-                        pygame.draw.rect(screen, particle.Color, (screen_x_int, screen_y_int, width, height))
+            for grid_x in range(self.WORLD.CHUNK_SIZE):
+                particle = chunk.GRID[grid_y][grid_x]
+                if particle is not None:
+
+                    world_x = base_x + grid_x
+                    screen_x = self.offset_X + (world_x * self.cell_size)
+                    screen_x_INT = int(screen_x)
+                    next_x = int(screen_x + self.cell_size)
+                    width = max(1, next_x - screen_x_INT)
+
+                    # Desenha a partícula
+                    pygame.draw.rect(
+                        self.screen,
+                        particle.Color,
+                        (screen_x_INT, screen_y_INT, width, height)
+                    )
