@@ -6,7 +6,6 @@ class Liquid(Particle):
     def __init__(self, name: str, color: tuple[int, int, int, int], density: float, heat_capacity: float, heat_conductivity: float):
         super().__init__(name, color, density, heat_capacity, heat_conductivity)
         self.VISCOSITY = 0
-        self.LOOK_FOR_RANGE = 5
 
         self._viscosity_frames = 0
         self.Preferred_fluid_direction = random.choice((-1, 1))
@@ -29,12 +28,6 @@ class Liquid(Particle):
 
 
     def _movement(self, WORLD, position):
-        self._viscosity_frames += 1
-        if self._viscosity_frames < self.VISCOSITY: 
-            self.movedThisFrame = True
-            return
-        self._viscosity_frames = 0
-
         downDirection = Vector2(position.X, position.Y + 1)
         if WORLD.getParticle(downDirection) is None:
             self.movedThisFrame = True
@@ -44,6 +37,12 @@ class Liquid(Particle):
 
         directionVector = Vector2(position.X + self.Preferred_fluid_direction, position.Y)
 
+        self._viscosity_frames += 1
+        if self._viscosity_frames < self.VISCOSITY: 
+            self.movedThisFrame = True
+            return
+        self._viscosity_frames = 0
+        
         # Lado
         if WORLD.getParticle(directionVector) is None:
             self.movedThisFrame = True
