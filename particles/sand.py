@@ -1,5 +1,3 @@
-import random
-from utils import Vector2
 from particles.base import MovableSolid
 
 class Sand(MovableSolid):
@@ -11,15 +9,4 @@ class Sand(MovableSolid):
             1.0,                                    # Particle Heat Capacity (maior = mais resistencia ao hea)
             0.2,                                   # Particle Heat Conductivity (maior = mais perda de calor)
         )
-    
-    def _inLiquid_movement(self, WORLD, position):
-        directions = [(0, 1), (-1, 1), (1, 1)]
-        random.shuffle(directions)
-        
-        for cx, cy in directions:
-            vector = Vector2(position.X + cx, position.Y + cy)
-            foundParticle = WORLD.getParticle(vector)
-            if foundParticle and hasattr(foundParticle, "VISCOSITY"):
-                WORLD.killAndReplace(position, "Mud")
-                return True
 
