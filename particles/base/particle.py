@@ -17,7 +17,8 @@ class Particle(ABC):
         
         # Temperatura
         self.Temperature = utils.AMBIENT_TEMPERATURE
-        self.MAX_TEMPERATURE = 1500.0
+        self.MAX_TEMPERATURE = 2000.0
+        self.MIN_TEMPERATURE = -273.0
         self.HEAT_START_TEMP = 200.0
 
         # Game things

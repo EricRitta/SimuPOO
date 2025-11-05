@@ -9,7 +9,7 @@ class Sand(MovableSolid):
             (195, 180, 130, 15),                    # Particle Color tuple[RED, GREEN, BLUE, VARIATION]
             3,                                      # Particle Density
             1.0,                                    # Particle Heat Capacity (maior = mais resistencia ao hea)
-            0.05,                                   # Particle Heat Conductivity (maior = mais perda de calor)
+            0.2,                                   # Particle Heat Conductivity (maior = mais perda de calor)
         )
     
     def _inLiquid_movement(self, WORLD, position):
