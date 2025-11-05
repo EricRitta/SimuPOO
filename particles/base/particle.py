@@ -60,5 +60,5 @@ class Particle(ABC):
     def sleepAndActivateNeighbors(self, WORLD, position):
         """Metodo de ativação para quando acabar"""
 
-    def tempChanged(self):
+    def tempChanged(self, WORLD, position):
         pass
