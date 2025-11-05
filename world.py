@@ -203,17 +203,14 @@ class World:
                 positions_to_activate.add((toPos.X + dx, toPos.Y + dy))
 
         for nx, ny in positions_to_activate:
-            # Valida limites do mundo ANTES de calcular chunks
             if not (0 <= nx < self.WIDTH and 0 <= ny < self.HEIGTH):
                 continue
             
-            # Calcula chunk inline (evita chamada de função)
             chunk_x = nx // self.CHUNK_SIZE
             chunk_y = ny // self.CHUNK_SIZE
             grid_x = nx % self.CHUNK_SIZE
             grid_y = ny % self.CHUNK_SIZE
             
-            # Acessa diretamente (já validamos limites)
             particle = self.Chunks[chunk_y][chunk_x].GRID[grid_y][grid_x]
             
             if not isinstance(particle, (int, float)) and not particle.isActive:
@@ -254,7 +251,7 @@ class World:
                     base_X = chunk.Position.X * self.CHUNK_SIZE
                     base_Y = chunk.Position.Y * self.CHUNK_SIZE
                     
-                    # Copia o set para iterar (evita modificação durante iteração)
+                    # copia o entry affect para não fazer merda no original
                     entropy_list = list(chunk.Entropy_Affected)
                     
                     for grid_X, grid_Y in entropy_list:
@@ -264,13 +261,12 @@ class World:
                         
                         self.disperseHeat(position)
                         
-                        # Verifica se pode "dormir" termicamente
                         cell = chunk.GRID[grid_Y][grid_X]
                         current_temp = utils.AMBIENT_TEMPERATURE
                         
                         if isinstance(cell, (int, float)):
                             current_temp = cell
-                            # Ar esfria gradualmente para o ambiente
+                            # sistema para o ar esfriar sozinho
                             if current_temp < self.AIR_HEAT_DISPERSION_START:
                                 temp_diff = current_temp - utils.AMBIENT_TEMPERATURE
                                 cooling = temp_diff * self.AIR_COOLING_RATE
@@ -352,6 +348,7 @@ class World:
                 self.Chunks[chunk_y][chunk_x].GRID[grid_y][grid_x] = new_temp
             else:
                 cell.Temperature = new_temp
+                cell.tempChanged(self, position)
             
             # Se a temperatura mudou significativamente, ativa os vizinhos também
             if abs(new_temp - current_temp) > self.TEMP_ACTIVATION_THRESHOLD * 0.5:
