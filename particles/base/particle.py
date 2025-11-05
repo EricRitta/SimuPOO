@@ -59,3 +59,6 @@ class Particle(ABC):
     @abstractmethod
     def sleepAndActivateNeighbors(self, WORLD, position):
         """Metodo de ativação para quando acabar"""
+
+    def tempChanged(self):
+        pass
