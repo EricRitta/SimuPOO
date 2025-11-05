@@ -184,6 +184,11 @@ class World:
         self.setParticle(None, replacedPos)
         self.setInstancedParticle(toReplaceParticle, replacedPos)
     
+    def createParticleInstance(self, particleName: str) -> Particle:
+        if not particleName:
+            raise ValueError(f"createParticleInstance chamada sem nome da particula.")
+        return newParticle(particleName)
+
     def wakeUpNeighbors(self, fromPos: Vector2, toPos: Vector2):
         # Offsets dos 8 vizinhos
         offsets = [(-1,-1), (0,-1), (1,-1), (-1,0), (1,0), (-1,1), (0,1), (1,1)]
