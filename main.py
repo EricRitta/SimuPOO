@@ -9,6 +9,9 @@ def main():
     physics_accumulator = 0.0
     physics_timestep = 1.0 / utils.PHYSICS_RATE
 
+    heat_accumulator = 0.0
+    heat_timestep = 10.0 / utils.TARGET_FPS  # 10 frames no framerate alvo
+
     WORLD = World(utils.WORLD_WIDTH, utils.WORLD_HEIGTH, utils.CHUNK_SIZE)
     RENDERER = Renderer(WORLD, utils.CELL_SIZE)
 
@@ -78,6 +81,11 @@ def main():
             while physics_accumulator >= physics_timestep:
                 WORLD.update()
                 physics_accumulator -= physics_timestep
+
+            heat_accumulator += dt
+            while heat_accumulator >= heat_timestep:
+                WORLD.updateHeat()
+                heat_accumulator -= heat_timestep
 
         RENDERER.render()
         
