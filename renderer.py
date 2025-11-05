@@ -109,7 +109,7 @@ class Renderer:
 
             for grid_x in range(self.WORLD.CHUNK_SIZE):
                 particle = chunk.GRID[grid_y][grid_x]
-                if particle is not None:
+                if not isinstance(particle, (int, float)):
 
                     world_x = base_x + grid_x
                     screen_x = self.offset_X + (world_x * self.cell_size)
