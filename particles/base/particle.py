@@ -36,7 +36,8 @@ class Particle(ABC):
             return self._COLOR
         
         base = self._COLOR
-        factor = min((self.Temperature - self.HEAT_START_TEMP) / (self.MAX_TEMPERATURE - self.HEAT_START_TEMP), 1.0)
+        actualTemp = min(self.Temperature, self.MAX_TEMPERATURE)
+        factor = min((actualTemp - self.HEAT_START_TEMP) / (self.MAX_TEMPERATURE - self.HEAT_START_TEMP), 1.0)
         
         subfactor = factor / 0.5
         target = (255, 0, 0)

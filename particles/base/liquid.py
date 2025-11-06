@@ -11,6 +11,8 @@ class Liquid(Particle):
         self.Preferred_fluid_direction = random.choice((-1, 1))
 
     def update(self, WORLD, position):
+        inFluid = self._inFluid_movement(WORLD, position)
+        if inFluid: return
         self._movement(WORLD, position)
 
     def sleepAndActivateNeighbors(self, WORLD, position):
@@ -39,7 +41,6 @@ class Liquid(Particle):
 
         self._viscosity_frames += 1
         if self._viscosity_frames < self.VISCOSITY: 
-            self.movedThisFrame = True
             return
         self._viscosity_frames = 0
         
@@ -58,3 +59,29 @@ class Liquid(Particle):
             WORLD.wakeUpNeighbors(position, directionVector)
             self.Preferred_fluid_direction = -self.Preferred_fluid_direction
             return
+
+    def _inFluid_movement(self, WORLD, position):
+        directions = [(0, 1), (-1, 1), (1, 1)]
+        random.shuffle(directions)
+        
+        for cx, cy in directions:
+            vector = Vector2(position.X + cx, position.Y + cy)
+            foundParticle = WORLD.getParticle(vector)
+            if not foundParticle: return
+            if hasattr(foundParticle, "VISCOSITY") or hasattr(foundParticle,  "WEIGHT"):
+                if foundParticle.DENSITY < self.DENSITY:
+                    self.movedThisFrame = True
+
+                    # calcular resistencia
+                    diff = abs(self.DENSITY - foundParticle.DENSITY)
+                    max_diff = max(self.DENSITY, foundParticle.DENSITY)
+                    diff_normalized = diff / max_diff
+                    resistence = round(5 - (4 * diff_normalized))
+
+                    self.sink_timer += 1
+                    if self.sink_timer >= resistence:
+                        self.sink_timer = 0
+                        WORLD.swapParticles(position, vector)
+                        WORLD.wakeUpNeighbors(position, vector)
+                        return True
+                    return True
