@@ -23,4 +23,3 @@ class Molten(Liquid):
             coldParticle.Current_Frame = self.Current_Frame
             WORLD.setParticle(None, position)
             WORLD.setInstancedParticle(coldParticle, position)
-            self.movedThisFrame = True

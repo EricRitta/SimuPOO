@@ -20,7 +20,7 @@ def main():
     paused = False
     fullscreen = False
 
-    all_particles = ["Sand", "Water", "Metal", "Mud"]
+    all_particles = ["Sand", "Water", "Metal", "Mud", "Fire", "Steam"]
     particle_selector = 0
     current_particle = "Sand"
 

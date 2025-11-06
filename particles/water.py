@@ -7,5 +7,10 @@ class Water(Liquid):
             (70, 140, 255, 10),                      # Particle Color tuple[RED, GREEN, BLUE, VARIATION]
             1,                                       # Particle Density
             4.0,                                     # Particle Heat Capacity
-            0.1,                                     # Particle Heat Conductivity
+            0.2,                                     # Particle Heat Conductivity
         )
+        self.BOILING_POINT = 100.0
+
+    def tempChanged(self, WORLD, position):
+        if self.Temperature > self.BOILING_POINT:
+            WORLD.killAndReplace(position, "Steam")
