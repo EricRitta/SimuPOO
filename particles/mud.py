@@ -1,8 +1,6 @@
-import random
-from utils import Vector2
-from particles.base import MovableSolid
+from particles.base import ImmovableSolid
 
-class Mud(MovableSolid):
+class Mud(ImmovableSolid):
     def __init__(self):
         super().__init__(
             "Mud",                                  # Particle Name 
@@ -11,3 +9,12 @@ class Mud(MovableSolid):
             1.2,                                    # Particle Heat Capacity
             0.15,                                   # Particle Heat Conductivity
         )
+        self.TEMP_TO_DRY = 100.0
+
+    def tempChanged(self, WORLD, position):
+        if self.Temperature > self.TEMP_TO_DRY:
+            coldParticle = WORLD.createParticleInstance('Dirt')
+            coldParticle.Temperature = self.Temperature
+            coldParticle.Current_Frame = self.Current_Frame
+            WORLD.setParticle(None, position)
+            WORLD.setInstancedParticle(coldParticle, position)

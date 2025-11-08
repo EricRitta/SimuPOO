@@ -6,6 +6,6 @@ class Metal(ImmovableSolid):
             "Metal",                                 # Particle Name 
             (100, 100, 100, 5),                      # Particle Color tuple[RED, GREEN, BLUE, VARIATION]
             6,                                       # Particle Density
-            1.0,                                     # Particle Heat Capacity
+            2.0,                                     # Particle Heat Capacity
             0.15,                                     # Particle Heat Conductivity
         )

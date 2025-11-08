@@ -20,9 +20,9 @@ def main():
     paused = False
     fullscreen = False
 
-    all_particles = ["Sand", "Water", "Metal", "Mud", "Fire", "Steam"]
+    all_particles = ["Dirt", "Water", "Metal", "Mud", "Fire", "Steam", "BlueFire"]
     particle_selector = 0
-    current_particle = "Sand"
+    current_particle = "Dirt"
 
     while running:
         dt = clock.tick(utils.TARGET_FPS) / 1000.0

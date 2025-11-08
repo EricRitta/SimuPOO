@@ -12,7 +12,7 @@ class Fire(Gas):
         self.LAST_PARTICLE = None
 
         self.HEAT_START_TEMP = 0
-        self.MAX_TEMPERATURE = 1500
+        self.MAX_TEMPERATURE = 1200
         self.Temperature = 1200
 
         self.WEIGHT = 0
