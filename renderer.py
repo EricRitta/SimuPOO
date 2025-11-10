@@ -5,16 +5,16 @@ class Renderer:
     def __init__(self, world, cell_size: int = 2):
         # Constantes
         self.WORLD = world
-        self.UI_BAR_CELLS = 6
+        self.UI_BAR_CELLS = 10
 
-        self.LETTERBOX_COLOR = (50, 50, 50)
+        self.LETTERBOX_COLOR = (30, 30, 30)
         self.BACKGROUND_COLOR = (20, 20, 20)
-        self.UI_BAR_COLOR = (200, 200, 200)
+        self.UI_BAR_COLOR = (30, 30, 30)
 
         # Tela
         self.cell_size = cell_size
         self.DEFAULT_WIDTH = self.WORLD.WIDTH * cell_size
-        self.DEFAULT_HEIGTH = self.WORLD.HEIGTH * cell_size + (self.UI_BAR_CELLS * cell_size)
+        self.DEFAULT_HEIGTH = self.WORLD.HEIGTH * cell_size #+ (self.UI_BAR_CELLS * cell_size)
         
         self.window_width = self.DEFAULT_WIDTH
         self.window_height = self.DEFAULT_HEIGTH
@@ -23,7 +23,7 @@ class Renderer:
             pygame.RESIZABLE | pygame.HWSURFACE | pygame.DOUBLEBUF
         )
         
-        # Calcular a escala baseado no mundo
+        self.Fullscreen = False
         self._calculate_scale()
 
     @property
@@ -73,27 +73,18 @@ class Renderer:
                 if chunk.isActive:
                     self._render_chunk(chunk)
 
-        pygame.display.flip()
-
     def _calculate_scale(self):
-        # Calcula a altura da barra UI baseada no cell_size atual
-        ui_bar_height = self.UI_BAR_CELLS * self.cell_size
-        
-        # Escala da barra superior da UI
-        available_height = self.window_height - ui_bar_height
-
-        # Escala total da janela
         scale_X = self.window_width / self.WORLD.WIDTH
-        scale_Y = available_height / self.WORLD.HEIGTH
+        scale_Y = self.window_height / (self.WORLD.HEIGTH + self.UI_BAR_CELLS)
 
-        # Atualiza o cell_size baseado na menor escala
         self.cell_size = min(scale_X, scale_Y)
 
-        # Recalcula offsets com o novo cell_size
-        self.offset_X = (self.window_width - (self.WORLD.WIDTH * self.cell_size)) / 2
         ui_bar_height = self.UI_BAR_CELLS * self.cell_size
-        self.offset_Y = ui_bar_height + (available_height - (self.WORLD.HEIGTH * self.cell_size)) / 2
+        world_pixel_height = self.WORLD.HEIGTH * self.cell_size
 
+        self.offset_X = (self.window_width - (self.WORLD.WIDTH * self.cell_size)) / 2
+        self.offset_Y = ui_bar_height
+    
     def _render_chunk(self, chunk):
         # Inicio da conversal para coordenada mundial
         base_x = chunk.Position.X * self.WORLD.CHUNK_SIZE

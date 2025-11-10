@@ -62,6 +62,7 @@ class World:
         self.Chunks_Quantity_Y = self.HEIGTH // self.CHUNK_SIZE
 
         # Geração dos chunks
+        self.Running = True
         self.Current_Frame = 0
         self.Chunks = [[None] * self.Chunks_Quantity_X for _ in range(self.Chunks_Quantity_Y)]
         for chunk_Y in range(self.Chunks_Quantity_Y):
@@ -90,6 +91,7 @@ class World:
                     chunk.Active_Particles.discard((grid_X, grid_Y))
             
     def update(self):
+        if not self.Running: return
         self.Current_Frame ^= 1
         
         for chunk_Y in range(self.Chunks_Quantity_Y - 1, -1, -1):
