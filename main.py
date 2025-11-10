@@ -24,6 +24,9 @@ def main():
     particle_selector = 0
     current_particle = "Dirt"
 
+    # Variáveis do menu
+    show_menu = True
+
     while running:
         dt = clock.tick(utils.TARGET_FPS) / 1000.0
         dt = 0.1 if dt > 0.1 else dt
@@ -59,22 +62,44 @@ def main():
                             pygame.RESIZABLE | pygame.HWSURFACE | pygame.DOUBLEBUF
                         )
                         RENDERER.handle_resize(RENDERER.DEFAULT_WIDTH, RENDERER.DEFAULT_HEIGTH)
+                
+                # Tecla M para mostrar/ocultar menu
+                if event.key == pygame.K_m:
+                    show_menu = not show_menu
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Botão esquerdo do mouse
+                    mouse_X, mouse_Y = pygame.mouse.get_pos()
+                    
+                    # Verificar se clicou no menu
+                    if show_menu and RENDERER.is_menu_click(mouse_X, mouse_Y):
+                        menu_item_height = 30
+                        menu_start_y = 40
+                        
+                        for i, particle in enumerate(all_particles):
+                            item_y = menu_start_y + i * menu_item_height
+                            if item_y <= mouse_Y <= item_y + menu_item_height:
+                                current_particle = particle
+                                particle_selector = i
+                                break
 
         mouse_buttons = pygame.mouse.get_pressed()
         if mouse_buttons[0] or mouse_buttons[2]:
             mouse_X, mouse_Y = pygame.mouse.get_pos()
 
-            worldPos = RENDERER.screen_to_world(mouse_X, mouse_Y)
-            if worldPos:
-                particle_type = None if mouse_buttons[2] else current_particle
+            # Só processar clique no mundo se não estiver clicando no menu
+            if not (show_menu and RENDERER.is_menu_click(mouse_X, mouse_Y)):
+                worldPos = RENDERER.screen_to_world(mouse_X, mouse_Y)
+                if worldPos:
+                    particle_type = None if mouse_buttons[2] else current_particle
 
-                brush_size = 1
-                for dy in range(-brush_size, brush_size + 1):
-                    for dx in range(-brush_size, brush_size + 1):
-                        realWorldPos = worldPos + utils.Vector2(dx, dy)
+                    brush_size = 1
+                    for dy in range(-brush_size, brush_size + 1):
+                        for dx in range(-brush_size, brush_size + 1):
+                            realWorldPos = worldPos + utils.Vector2(dx, dy)
 
-                        if 0 <= realWorldPos.X < WORLD.WIDTH and 0 <= realWorldPos.Y < WORLD.HEIGTH:
-                            WORLD.setParticle(particle_type, realWorldPos)
+                            if 0 <= realWorldPos.X < WORLD.WIDTH and 0 <= realWorldPos.Y < WORLD.HEIGTH:
+                                WORLD.setParticle(particle_type, realWorldPos)
         
         if not paused:
             physics_accumulator += dt
@@ -87,11 +112,13 @@ def main():
                 WORLD.updateHeat()
                 heat_accumulator -= heat_timestep
 
-        RENDERER.render()
+        # Renderização com menu
+        RENDERER.render(show_menu=show_menu, current_particle=current_particle, all_particles=all_particles)
         
         fps = clock.get_fps()
         paused_text = "[PAUSED]" if paused else ""
-        pygame.display.set_caption(f"{paused_text} SimuPOO - FPS: {fps:.1f} - Selected: {current_particle}")
+        menu_text = "" if show_menu else " | [M] Menu"
+        pygame.display.set_caption(f"{paused_text} SimuPOO - FPS: {fps:.1f} - Selected: {current_particle}{menu_text}")
 
     pygame.quit()
     
