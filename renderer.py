@@ -1,11 +1,12 @@
 import pygame
+import utils
 from utils import Vector2
 
 class Renderer:
     def __init__(self, world, cell_size: int = 2):
         # Constantes
         self.WORLD = world
-        self.UI_BAR_CELLS = 10
+        self.UI_BAR_CELLS = 14
 
         self.LETTERBOX_COLOR = (30, 30, 30)
         self.BACKGROUND_COLOR = (20, 20, 20)
@@ -72,6 +73,29 @@ class Renderer:
                 chunk = self.WORLD.Chunks[chunk_Y][chunk_X]
                 if chunk.isActive:
                     self._render_chunk(chunk)
+
+        self._render_brush_preview()
+
+    def _render_brush_preview(self):
+            if utils.BRUSH_RADIUS <= 0:
+                return
+            
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            worldPos = self.screen_to_world(mouse_x, mouse_y)
+            if not worldPos: return
+
+            radius_in_pixels = int(utils.BRUSH_RADIUS * self.cell_size)
+            diameter = radius_in_pixels * 2 + 4
+            preview_surface = pygame.Surface((diameter, diameter), pygame.SRCALPHA)
+            
+            pygame.draw.circle(
+                preview_surface,
+                (255, 255, 255, 50),
+                (diameter // 2, diameter // 2),
+                radius_in_pixels
+            )
+            
+            self.screen.blit(preview_surface, (mouse_x - diameter // 2, mouse_y - diameter // 2))
 
     def _calculate_scale(self):
         scale_X = self.window_width / self.WORLD.WIDTH

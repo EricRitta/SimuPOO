@@ -17,7 +17,7 @@ def main():
     WORLD = World(utils.WORLD_WIDTH, utils.WORLD_HEIGTH, utils.CHUNK_SIZE)
     RENDERER = Renderer(WORLD, utils.CELL_SIZE)
     UI = Ui(RENDERER, WORLD)
-    HANDLER = EventHandler(RENDERER, WORLD, UI)
+    EVENT_HANDLER = EventHandler(RENDERER, WORLD, UI)
 
     clock = pygame.time.Clock()
     running = True
@@ -30,12 +30,13 @@ def main():
         dt = clock.tick(utils.TARGET_FPS) / 1000.0
         dt = 0.1 if dt > 0.1 else dt
 
-        eventsResult = HANDLER.handleEvents()
+        eventsResult = EVENT_HANDLER.handle()
         if eventsResult is False:
             running = False
      
-        mouseResults = HANDLER.handleContinuosMouse()
+        mouseResults = EVENT_HANDLER.handleContinuosMouse()
 
+        # implementação horrososa de dt, mas a preguiça fala mais alto
         if WORLD.Running:
             physics_accumulator += dt
             while physics_accumulator >= physics_timestep:

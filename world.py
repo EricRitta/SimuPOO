@@ -91,7 +91,6 @@ class World:
                     chunk.Active_Particles.discard((grid_X, grid_Y))
             
     def update(self):
-        if not self.Running: return
         self.Current_Frame ^= 1
         
         for chunk_Y in range(self.Chunks_Quantity_Y - 1, -1, -1):
@@ -190,6 +189,48 @@ class World:
         if not particleName:
             raise ValueError(f"createParticleInstance chamada sem nome da particula.")
         return newParticle(particleName)
+
+    # Peguei essa função de um cara no YouTube: MARF | @marf1610
+    def iterateAndApplyMethodBetweenTwoPoints(self, pos1: Vector2, pos2: Vector2, function):
+        # Se os dois pontos são iguais, executa a função apenas uma vez
+        if pos1.X == pos2.X and pos1.Y == pos2.Y:
+            function(self, pos1)
+            return
+        
+        matrix_x1 = pos1.X
+        matrix_y1 = pos1.Y
+        matrix_x2 = pos2.X
+        matrix_y2 = pos2.Y
+        
+        x_diff = matrix_x1 - matrix_x2
+        y_diff = matrix_y1 - matrix_y2
+        
+        x_diff_is_larger = abs(x_diff) > abs(y_diff)
+        
+        x_modifier = 1 if x_diff < 0 else -1
+        y_modifier = 1 if y_diff < 0 else -1
+        
+        longer_side_length = max(abs(x_diff), abs(y_diff))
+        shorter_side_length = min(abs(x_diff), abs(y_diff))
+        
+        slope = 0.0 if (shorter_side_length == 0 or longer_side_length == 0) else (shorter_side_length / longer_side_length)
+        
+        for i in range(1, longer_side_length + 1):
+            shorter_side_increase = round(i * slope)
+            
+            if x_diff_is_larger:
+                x_increase = i
+                y_increase = shorter_side_increase
+            else:
+                y_increase = i
+                x_increase = shorter_side_increase
+            
+            current_y = matrix_y1 + (y_increase * y_modifier)
+            current_x = matrix_x1 + (x_increase * x_modifier)
+            
+            # Verifica se está dentro dos limites do mundo
+            if 0 <= current_x < self.WIDTH and 0 <= current_y < self.HEIGTH:
+                function(self, Vector2(current_x, current_y))
 
     def wakeUpNeighbors(self, fromPos: Vector2, toPos: Vector2):
         # Offsets dos 8 vizinhos
