@@ -58,10 +58,9 @@ class World:
         self.AIR_COOLING_RATE = 0.01
 
         # Coordenadas e Chunks
+        self.NEIGHBOR_OFFSETS = [(-1,-1), (0,-1), (1,-1), (-1,0), (1,0), (-1,1), (0,1), (1,1)]
         self.Chunks_Quantity_X = self.WIDTH // self.CHUNK_SIZE
         self.Chunks_Quantity_Y = self.HEIGTH // self.CHUNK_SIZE
-        self.CoordinatesCache = {}
-        self.__precomputeCoordinates()
 
         # Geração dos chunks
         self.Running = True
@@ -70,16 +69,6 @@ class World:
         for chunk_Y in range(self.Chunks_Quantity_Y):
             for chunk_X in range(self.Chunks_Quantity_X):
                 self.Chunks[chunk_Y][chunk_X] = Chunk(Vector2(chunk_X, chunk_Y), self.CHUNK_SIZE)
-
-    def __precomputeCoordinates(self):
-        for y in range(self.HEIGTH):
-            for x in range(self.WIDTH):
-                chunk_X = x // self.CHUNK_SIZE
-                chunk_Y = y // self.CHUNK_SIZE
-                grid_X = x % self.CHUNK_SIZE
-                grid_Y = y % self.CHUNK_SIZE
-
-                self.CoordinatesCache[(x, y)] = (Vector2(chunk_X, chunk_Y), Vector2(grid_X, grid_Y))
 
     def update_chunk(self, chunk: Chunk):
         # Coordenada Base
@@ -113,17 +102,20 @@ class World:
 
 
     ### MÉTODOS BÁSICOS -----------------------------------------------------------------------------
-    def worldPOS_TO_chunkPOS(self, globalPosition: Vector2) -> tuple[Vector2, Vector2]:
-        try:
-            chunk_Position, grid_Position = self.CoordinatesCache[(globalPosition.X, globalPosition.Y)]
-        except KeyError:
-            return False, False
-        return chunk_Position, grid_Position
+    def worldPOS_TO_chunkPOS(self, globalPosition: Vector2) -> tuple[Vector2, Vector2]:        
+        x = globalPosition.X
+        y = globalPosition.Y
+        
+        chunk_X = x // self.CHUNK_SIZE
+        chunk_Y = y // self.CHUNK_SIZE
+        grid_X = x % self.CHUNK_SIZE
+        grid_Y = y % self.CHUNK_SIZE
+        
+        return Vector2(chunk_X, chunk_Y), Vector2(grid_X, grid_Y)
 
-    def setParticle(self, particleName, position: Vector2):
+    def setParticle(self, particleName, position: Vector2, wakeUpWhenNone: bool = False):
         # Coordenada mundial para chunk
         chunkPos, gridPos = self.worldPOS_TO_chunkPOS(position)
-        if not chunkPos or not gridPos: return
         
         # Verifica se o chunk existe
         if 0 <= chunkPos.X < self.Chunks_Quantity_X and 0 <= chunkPos.Y < self.Chunks_Quantity_Y:
@@ -132,7 +124,8 @@ class World:
             # Remoção ou adição de particula
             if particleName is None:
                 chunk._removeParticle(gridPos)
-                self.wakeUpNeighbors(position, None)
+                if wakeUpWhenNone:
+                    self.wakeUpNeighbors(position)
             else:
                 particle = newParticle(particleName)
                 chunk._addParticle(particle, gridPos)
@@ -143,7 +136,6 @@ class World:
     def setInstancedParticle(self, particle: Particle, toPos: Vector2):
         # Coordenada mundial para chunk
         chunkPos, gridPos = self.worldPOS_TO_chunkPOS(toPos)
-        if not chunkPos or not gridPos: return
         
         # Verifica se o chunk existe
         if 0 <= chunkPos.X < self.Chunks_Quantity_X and 0 <= chunkPos.Y < self.Chunks_Quantity_Y:
@@ -158,8 +150,7 @@ class World:
     def getParticle(self, position: Vector2) -> Particle:
         # Coordenada mundial para chunk
         chunkPos, gridPos = self.worldPOS_TO_chunkPOS(position)
-        if not chunkPos or not gridPos: return False
-        
+
         # Verifica se o chunk existe
         if 0 <= chunkPos.X < self.Chunks_Quantity_X and 0 <= chunkPos.Y < self.Chunks_Quantity_Y:
             particle = self.Chunks[chunkPos.Y][chunkPos.X].GRID[gridPos.Y][gridPos.X]
@@ -175,6 +166,8 @@ class World:
 
         self.setParticle(None, fromPos)
         self.setInstancedParticle(particle, toPos)
+        self.wakeUpNeighbors(fromPos)
+        self.wakeUpNeighbors(toPos)
         return True
     
     def swapParticles(self, fromPos: Vector2, toPos: Vector2):
@@ -191,6 +184,10 @@ class World:
         # Coloca nas posições trocadas
         self.setInstancedParticle(particle2, fromPos)
         self.setInstancedParticle(particle1, toPos)
+
+        # Acorda todo mundo, hora de trabalhar
+        self.wakeUpNeighbors(fromPos)
+        self.wakeUpNeighbors(toPos)
         return True
     
     def killAndReplace(self, replacedPos: Vector2, newParticleName: str):
@@ -201,6 +198,7 @@ class World:
 
         self.setParticle(None, replacedPos)
         self.setInstancedParticle(toReplaceParticle, replacedPos)
+        self.wakeUpNeighbors(replacedPos)
     
     def createParticleInstance(self, particleName: str) -> Particle:
         if not particleName:
@@ -249,36 +247,25 @@ class World:
             if 0 <= current_x < self.WIDTH and 0 <= current_y < self.HEIGTH:
                 function(self, Vector2(current_x, current_y))
 
-    def wakeUpNeighbors(self, fromPos: Vector2, toPos: Vector2):
-        # Offsets dos 8 vizinhos
-        offsets = [(-1,-1), (0,-1), (1,-1), (-1,0), (1,0), (-1,1), (0,1), (1,1)]
-        
-        positions_to_activate = set()
+    def wakeUpNeighbors(self, particlePosition: Vector2):
+        posX, posY = particlePosition.X, particlePosition.Y
+        for x, y in self.NEIGHBOR_OFFSETS:
+            nx, ny = posX + x, posY + y
 
-        for dx, dy in offsets:
-            positions_to_activate.add((fromPos.X + dx, fromPos.Y + dy))
-
-        if toPos:
-            for dx, dy in offsets:
-                positions_to_activate.add((toPos.X + dx, toPos.Y + dy))
-
-        for nx, ny in positions_to_activate:
             if not (0 <= nx < self.WIDTH and 0 <= ny < self.HEIGTH):
                 continue
-            
+
             chunk_x = nx // self.CHUNK_SIZE
             chunk_y = ny // self.CHUNK_SIZE
             grid_x = nx % self.CHUNK_SIZE
             grid_y = ny % self.CHUNK_SIZE
-            
+
             particle = self.Chunks[chunk_y][chunk_x].GRID[grid_y][grid_x]
-            
             if not isinstance(particle, (int, float)) and not particle.isActive:
                 particle.wokenByNeighbors = True
                 particle._dead_frames = 0
                 particle.isActive = True
                 self.Chunks[chunk_y][chunk_x].Active_Particles.add((grid_x, grid_y))
-
     #-----------------------------------------------------------------------------------------------------
 
 

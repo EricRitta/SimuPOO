@@ -22,6 +22,7 @@ class Particle(ABC):
         self.HEAT_START_TEMP = 200.0
 
         # Game things
+        self.MAX_DEAD_FRAMES = 5
         self.movedThisFrame = True
         self.Current_Frame = 0
         self.sink_timer = 0

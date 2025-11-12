@@ -5,12 +5,12 @@ import random
 class Gas(Particle):
     def __init__(self, name: str, color: tuple[int, int, int, int], density: float, heat_capacity: float, heat_conductivity: float):
         super().__init__(name, color, density, heat_capacity, heat_conductivity)
+        self.MAX_DEAD_FRAMES = 30
         self.WEIGHT = 3
         self._weight_frames = 0
 
     def update(self, WORLD, position):
-        inGas = self._inGas_movement(WORLD, position)
-        if inGas: return
+        if self._inGas_movement(WORLD, position): return
         self._movement(WORLD, position)
 
     def sleepAndActivateNeighbors(self, WORLD, position):
@@ -20,8 +20,8 @@ class Gas(Particle):
 
         self._dead_frames += 1
         if not self.wokenByNeighbors:
-            WORLD.wakeUpNeighbors(position, None)
-        if self._dead_frames >= 60:
+            WORLD.wakeUpNeighbors(position)
+        if self._dead_frames >= self.MAX_DEAD_FRAMES:
             self.wokenByNeighbors = False
             self.isActive = False
 
@@ -29,7 +29,7 @@ class Gas(Particle):
 
     def _movement(self, WORLD, position):
         self._weight_frames += 1
-        if self._weight_frames < self.WEIGHT: 
+        if self._weight_frames < self.WEIGHT:
             return
         self._weight_frames = 0
 
@@ -48,7 +48,6 @@ class Gas(Particle):
             if WORLD.getParticle(direction) is None:
                 self.movedThisFrame = True
                 WORLD.killAndMove(position, direction)
-                WORLD.wakeUpNeighbors(position, direction)
                 break
 
 
@@ -65,7 +64,6 @@ class Gas(Particle):
                 if self.Temperature > foundParticle.Temperature:
                     self.movedThisFrame = True
                     WORLD.swapParticles(position, vector)
-                    WORLD.wakeUpNeighbors(position, vector)
                     return True
 
                 else:
@@ -84,6 +82,5 @@ class Gas(Particle):
                         if self.sink_timer >= resistence:
                             self.sink_timer = 0
                             WORLD.swapParticles(position, vector)
-                            WORLD.wakeUpNeighbors(position, vector)
                             return True
                         return True

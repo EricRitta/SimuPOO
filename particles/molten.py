@@ -21,5 +21,5 @@ class Molten(Liquid):
             coldParticle = WORLD.createParticleInstance(self.COLD_PARTICLE)
             coldParticle.Temperature = self.Temperature
             coldParticle.Current_Frame = self.Current_Frame
-            WORLD.setParticle(None, position)
+            WORLD.setParticle(None, position, True)
             WORLD.setInstancedParticle(coldParticle, position)

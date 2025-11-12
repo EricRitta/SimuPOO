@@ -16,5 +16,5 @@ class Mud(ImmovableSolid):
             coldParticle = WORLD.createParticleInstance('Dirt')
             coldParticle.Temperature = self.Temperature
             coldParticle.Current_Frame = self.Current_Frame
-            WORLD.setParticle(None, position)
+            WORLD.setParticle(None, position, True)
             WORLD.setInstancedParticle(coldParticle, position)

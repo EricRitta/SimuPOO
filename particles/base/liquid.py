@@ -5,14 +5,14 @@ import random
 class Liquid(Particle):
     def __init__(self, name: str, color: tuple[int, int, int, int], density: float, heat_capacity: float, heat_conductivity: float):
         super().__init__(name, color, density, heat_capacity, heat_conductivity)
+        self.MAX_DEAD_FRAMES = 20
         self.VISCOSITY = 0
 
         self._viscosity_frames = 0
         self.Preferred_fluid_direction = random.choice((-1, 1))
 
     def update(self, WORLD, position):
-        inFluid = self._inFluid_movement(WORLD, position)
-        if inFluid: return
+        if self._inFluid_movement(WORLD, position): return
         self._movement(WORLD, position)
 
     def sleepAndActivateNeighbors(self, WORLD, position):
@@ -22,8 +22,8 @@ class Liquid(Particle):
 
         self._dead_frames += 1
         if not self.wokenByNeighbors:
-            WORLD.wakeUpNeighbors(position, None)
-        if self._dead_frames >= 60:
+            WORLD.wakeUpNeighbors(position)
+        if self._dead_frames >= self.MAX_DEAD_FRAMES:
             self.wokenByNeighbors = False
             self.isActive = False
 
@@ -34,13 +34,12 @@ class Liquid(Particle):
         if WORLD.getParticle(downDirection) is None:
             self.movedThisFrame = True
             WORLD.killAndMove(position, downDirection)
-            WORLD.wakeUpNeighbors(position, downDirection)
             return
 
         directionVector = Vector2(position.X + self.Preferred_fluid_direction, position.Y)
 
         self._viscosity_frames += 1
-        if self._viscosity_frames < self.VISCOSITY: 
+        if self._viscosity_frames < self.VISCOSITY:
             return
         self._viscosity_frames = 0
         
@@ -48,7 +47,6 @@ class Liquid(Particle):
         if WORLD.getParticle(directionVector) is None:
             self.movedThisFrame = True
             WORLD.killAndMove(position, directionVector)
-            WORLD.wakeUpNeighbors(position, directionVector)
             return
 
         # Lado oposto
@@ -56,7 +54,6 @@ class Liquid(Particle):
         if WORLD.getParticle(directionVector) is None:
             self.movedThisFrame = True
             WORLD.killAndMove(position, directionVector)
-            WORLD.wakeUpNeighbors(position, directionVector)
             self.Preferred_fluid_direction = -self.Preferred_fluid_direction
             return
 
@@ -82,6 +79,5 @@ class Liquid(Particle):
                     if self.sink_timer >= resistence:
                         self.sink_timer = 0
                         WORLD.swapParticles(position, vector)
-                        WORLD.wakeUpNeighbors(position, vector)
                         return True
                     return True

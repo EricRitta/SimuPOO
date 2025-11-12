@@ -17,7 +17,7 @@ class ImmovableSolid(Particle):
 
         self._dead_frames += 1
         if not self.wokenByNeighbors:
-            WORLD.wakeUpNeighbors(position, None)
-        if self._dead_frames >= 60:
+            WORLD.wakeUpNeighbors(position)
+        if self._dead_frames >= self.MAX_DEAD_FRAMES:
             self.wokenByNeighbors = False
             self.isActive = False

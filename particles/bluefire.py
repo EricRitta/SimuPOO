@@ -19,8 +19,7 @@ class BlueFire(Gas):
         self.Life_Time = 90
 
     def update(self, WORLD, position):
-        dead = self.killedByTime(WORLD, position)
-        if dead: return
+        if self.killedByTime(WORLD, position): return
         super().update(WORLD, position)
 
     def killedByTime(self, WORLD, position):

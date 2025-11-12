@@ -7,8 +7,7 @@ class MovableSolid(Particle):
         super().__init__(name, color, density, heat_capacity, heat_conductivity)
 
     def update(self, WORLD, position):
-        liquidMove = self._inFluid_movement(WORLD, position)
-        if liquidMove: return
+        if self._inFluid_movement(WORLD, position): return
         self._movement(WORLD, position)
     
     def sleepAndActivateNeighbors(self, WORLD, position):
@@ -18,8 +17,8 @@ class MovableSolid(Particle):
 
         self._dead_frames += 1
         if not self.wokenByNeighbors:
-            WORLD.wakeUpNeighbors(position, None)
-        if self._dead_frames >= 60:
+            WORLD.wakeUpNeighbors(position)
+        if self._dead_frames >= self.MAX_DEAD_FRAMES:
             self.wokenByNeighbors = False
             self.isActive = False
 
@@ -37,7 +36,6 @@ class MovableSolid(Particle):
             if WORLD.getParticle(direction) is None:
                 self.movedThisFrame = True
                 WORLD.killAndMove(position, direction)
-                WORLD.wakeUpNeighbors(position, direction)
                 break
 
     def _inFluid_movement(self, WORLD, position):
@@ -62,7 +60,6 @@ class MovableSolid(Particle):
                     if self.sink_timer >= resistence:
                         self.sink_timer = 0
                         WORLD.swapParticles(position, vector)
-                        WORLD.wakeUpNeighbors(position, vector)
                         return True
                     return True
         

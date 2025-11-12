@@ -94,7 +94,7 @@ class EventHandler:
                     existingParticle = self.WORLD.getParticle(Vector2(point.X + dx, point.Y + dy))
                     if existingParticle is False: return
                     if existingParticle is None or existingParticle.NAME != particleName:
-                        self.WORLD.setParticle(particleName, Vector2(point.X + dx, point.Y + dy))
+                        self.WORLD.setParticle(particleName, Vector2(point.X + dx, point.Y + dy), True)
     # ____________________________________________________________________________
 
     def __handleMousePress(self):

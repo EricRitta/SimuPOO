@@ -16,5 +16,5 @@ class Steam(Gas):
             water = WORLD.createParticleInstance("Water")
             water.Temperature = self.Temperature
             water.Current_Frame = self.Current_Frame
-            WORLD.setParticle(None, position)
+            WORLD.setParticle(None, position, True)
             WORLD.setInstancedParticle(water, position)
