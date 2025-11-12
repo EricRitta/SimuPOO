@@ -57,9 +57,11 @@ class World:
         self.AIR_HEAT_DISPERSION_START = 200.0
         self.AIR_COOLING_RATE = 0.01
 
-        # Quantidade de chunks
+        # Coordenadas e Chunks
         self.Chunks_Quantity_X = self.WIDTH // self.CHUNK_SIZE
         self.Chunks_Quantity_Y = self.HEIGTH // self.CHUNK_SIZE
+        self.CoordinatesCache = {}
+        self.__precomputeCoordinates()
 
         # Geração dos chunks
         self.Running = True
@@ -68,6 +70,16 @@ class World:
         for chunk_Y in range(self.Chunks_Quantity_Y):
             for chunk_X in range(self.Chunks_Quantity_X):
                 self.Chunks[chunk_Y][chunk_X] = Chunk(Vector2(chunk_X, chunk_Y), self.CHUNK_SIZE)
+
+    def __precomputeCoordinates(self):
+        for y in range(self.HEIGTH):
+            for x in range(self.WIDTH):
+                chunk_X = x // self.CHUNK_SIZE
+                chunk_Y = y // self.CHUNK_SIZE
+                grid_X = x % self.CHUNK_SIZE
+                grid_Y = y % self.CHUNK_SIZE
+
+                self.CoordinatesCache[(x, y)] = (Vector2(chunk_X, chunk_Y), Vector2(grid_X, grid_Y))
 
     def update_chunk(self, chunk: Chunk):
         # Coordenada Base
@@ -102,13 +114,16 @@ class World:
 
     ### MÉTODOS BÁSICOS -----------------------------------------------------------------------------
     def worldPOS_TO_chunkPOS(self, globalPosition: Vector2) -> tuple[Vector2, Vector2]:
-        chunk_Position = globalPosition // self.CHUNK_SIZE
-        grid_Position = globalPosition % self.CHUNK_SIZE
+        try:
+            chunk_Position, grid_Position = self.CoordinatesCache[(globalPosition.X, globalPosition.Y)]
+        except KeyError:
+            return False, False
         return chunk_Position, grid_Position
 
     def setParticle(self, particleName, position: Vector2):
         # Coordenada mundial para chunk
         chunkPos, gridPos = self.worldPOS_TO_chunkPOS(position)
+        if not chunkPos or not gridPos: return
         
         # Verifica se o chunk existe
         if 0 <= chunkPos.X < self.Chunks_Quantity_X and 0 <= chunkPos.Y < self.Chunks_Quantity_Y:
@@ -128,6 +143,7 @@ class World:
     def setInstancedParticle(self, particle: Particle, toPos: Vector2):
         # Coordenada mundial para chunk
         chunkPos, gridPos = self.worldPOS_TO_chunkPOS(toPos)
+        if not chunkPos or not gridPos: return
         
         # Verifica se o chunk existe
         if 0 <= chunkPos.X < self.Chunks_Quantity_X and 0 <= chunkPos.Y < self.Chunks_Quantity_Y:
@@ -142,6 +158,7 @@ class World:
     def getParticle(self, position: Vector2) -> Particle:
         # Coordenada mundial para chunk
         chunkPos, gridPos = self.worldPOS_TO_chunkPOS(position)
+        if not chunkPos or not gridPos: return False
         
         # Verifica se o chunk existe
         if 0 <= chunkPos.X < self.Chunks_Quantity_X and 0 <= chunkPos.Y < self.Chunks_Quantity_Y:
