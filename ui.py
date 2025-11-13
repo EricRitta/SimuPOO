@@ -107,6 +107,7 @@ class Ui:
         # Basico
         self.WORLD = WORLD
         self.RENDERER = RENDERER
+        self.MENU_DIVISOR = 5
 
         # Constants
         self.SCROLL_FORCE = 30
@@ -119,10 +120,25 @@ class Ui:
         self.TOPUI_ScrollFrames = 0
         self.TOPUI_SelectedButton = None
 
+        # Valores do Menu
+        self.isMenuOpen = False
+        self.MENU_TEXT = (248, 249, 250)
+        self.MENU_MARGIN = (33, 37, 41)
+        self.MENU_BACKGROUND = (52, 58, 64)
+
+        self.MENU_MAX_ANIMATION_FRAMES = 30
+        self.MENU_AnimationFrames = 0
+
+        self.MenuFont = pygame.font.Font(None, int(4 * self.RENDERER.cell_size))
+
         # code
         self.font = pygame.font.Font(None, int(6 * self.RENDERER.cell_size))
         for particle in utils.PARTICLES_INFO:
             self.ParticlesButtons.append(Button(particle["Name"], particle["Particle"], particle["Color"]))
+
+    @property
+    def menuWidth(self):
+        return self.RENDERER.window_width / self.MENU_DIVISOR
 
     # mudar depois para ser global, ou seja, qualquer botão da UI
     @property
@@ -150,12 +166,13 @@ class Ui:
 
     def render(self):
         self._renderTopUI()
+        self._renderMenu()
 
 # TOPUI -------------------------------------------------------------------------------------------------
     def _renderTopUI(self):
         mousePos = self.__getMouse()
         circle_MaxRadius = (self.RENDERER.ui_bar_heigth * 0.95) / 2
-        circle_Y = self.RENDERER.ui_bar_heigth / 2
+        circle_Y = self.RENDERER.offset_Y - self.RENDERER.ui_bar_heigth / 2
 
         for i, button in enumerate(self.ParticlesButtons):
             circle_X = (circle_MaxRadius * 1.2) + (circle_MaxRadius * 2) * i - min(self.TOPUI_ScrollFrames, self.TOPUI_Max_ScrollFrames)
@@ -184,12 +201,46 @@ class Ui:
         button.Active = True
         self.TOPUI_SelectedButton = index
 
+### MENU ------------------------------------------------------------------------------------------------------------
+    def _renderMenu(self):
+        if self.isMenuOpen:
+            self.MENU_AnimationFrames = min(self.MENU_MAX_ANIMATION_FRAMES, self.MENU_AnimationFrames + 1)
+        else:
+            self.MENU_AnimationFrames = max(0, self.MENU_AnimationFrames - 1)
+        self.__drawMenu()
+
+    def __drawMenu(self):
+        if self.MENU_AnimationFrames <= 0: return
+        t = self.MENU_AnimationFrames / self.MENU_MAX_ANIMATION_FRAMES
+        eased_t = BezierInAcc(t)
+
+        # Tamanho
+        menu_width = self.menuWidth * eased_t
+        menu_height = self.RENDERER.window_height
+
+        # MARGIN
+        pygame.draw.rect(
+            self.RENDERER.screen,
+            self.MENU_MARGIN,
+            (0, 0, menu_width, menu_height)
+        )
+
+        # BACKGROUND
+        background_width = menu_width * 0.95
+        background_height = menu_height * 0.98
+        pygame.draw.rect(
+            self.RENDERER.screen,
+            self.MENU_BACKGROUND,
+            ((menu_width - background_width) / 2, (menu_height - background_height) / 2, background_width, background_height)
+        )
+
 # PRIVADA NÃO ACESSAR, REPITO, NÃO GOZAR
     def __getMouse(self) -> Vector2:
         mouse_X, mouse_Y = pygame.mouse.get_pos()
         return Vector2(mouse_X, mouse_Y)
 
     def __isMouseInCircularBounds(self, mousePos: Vector2, buttonPos: Vector2, radius: (int, float)) -> bool:
+        if self.isMenuOpen: return False
         dx = mousePos.X - buttonPos.X
         dy = mousePos.Y - buttonPos.Y
         distance_squared = dx * dx + dy * dy

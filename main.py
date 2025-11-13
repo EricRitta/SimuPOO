@@ -7,6 +7,7 @@ import utils
 
 def main():
     pygame.init()
+    print("Press [M] to open the menu!")
     
     physics_accumulator = 0.0
     physics_timestep = 1.0 / utils.PHYSICS_RATE
@@ -21,10 +22,6 @@ def main():
 
     clock = pygame.time.Clock()
     running = True
-
-    all_particles = ["Dirt", "Water", "Metal", "Mud", "Fire", "Steam", "BlueFire"]
-    particle_selector = 0
-    current_particle = "Dirt"
 
     while running:
         dt = clock.tick(utils.TARGET_FPS) / 1000.0
@@ -48,13 +45,12 @@ def main():
                 WORLD.updateHeat()
                 heat_accumulator -= heat_timestep
 
-        RENDERER.render()
+        fps = clock.get_fps()
+        RENDERER.render(f"{fps:.1f}")
         UI.render()
         pygame.display.flip()
         
-        fps = clock.get_fps()
-        paused_text = "[PAUSED]" if not WORLD.Running else ""
-        pygame.display.set_caption(f"{paused_text} SimuPOO - FPS: {fps:.1f} - Selected: {current_particle}")
+        pygame.display.set_caption(f"SimuPOO")
 
     pygame.quit()
     

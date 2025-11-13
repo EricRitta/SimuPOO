@@ -100,6 +100,19 @@ class World:
                 if chunk.isActive:
                     self.update_chunk(chunk)
 
+    def reset(self):
+        self.Current_Frame = 0
+        
+        # Reseta todos os chunks
+        for chunk_Y in range(self.Chunks_Quantity_Y):
+            for chunk_X in range(self.Chunks_Quantity_X):
+                chunk = self.Chunks[chunk_Y][chunk_X]
+                
+                chunk.Active_Particles.clear()
+                chunk.Entropy_Affected.clear()
+                chunk.GRID = [[utils.AMBIENT_TEMPERATURE] * self.CHUNK_SIZE for _ in range(self.CHUNK_SIZE)]
+                chunk.isActive = False
+                chunk.particleCount = 0
 
     ### MÉTODOS BÁSICOS -----------------------------------------------------------------------------
     def worldPOS_TO_chunkPOS(self, globalPosition: Vector2) -> tuple[Vector2, Vector2]:        
@@ -272,11 +285,10 @@ class World:
     
     # MÉTODO DA TEMPERATURA
     def wakeUpHeatNeighbors(self, position: Vector2):
-        offsets = [(-1,-1), (0,-1), (1,-1), (-1,0), (1,0), (-1,1), (0,1), (1,1)]
-        
-        for dx, dy in offsets:
-            nx = position.X + dx
-            ny = position.Y + dy
+        posX, posY = position.X, position.Y
+        for dx, dy in self.NEIGHBOR_OFFSETS:
+            nx = posX + dx
+            ny = posY + dy
             
             if not (0 <= nx < self.WIDTH and 0 <= ny < self.HEIGTH):
                 continue
@@ -328,7 +340,6 @@ class World:
                             chunk.Entropy_Affected.discard((grid_X, grid_Y))
 
     def disperseHeat(self, position: Vector2):
-        """Dispersa o calor de uma célula para seus vizinhos"""
         chunk_x = position.X // self.CHUNK_SIZE
         chunk_y = position.Y // self.CHUNK_SIZE
         grid_x = position.X % self.CHUNK_SIZE
@@ -349,13 +360,11 @@ class World:
             conductivity = cell.HEAT_CONDUCTIVITY
         
         # Offset dos vizinhos
-        offsets = [(-1,-1), (0,-1), (1,-1), (-1,0), (1,0), (-1,1), (0,1), (1,1)]
-        
         temp_sum = 0
         count = 0
         
         # Média das temperaturas dos vizinhos
-        for dx, dy in offsets:
+        for dx, dy in self.NEIGHBOR_OFFSETS:
             nx = position.X + dx
             ny = position.Y + dy
             

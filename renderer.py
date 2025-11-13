@@ -15,7 +15,8 @@ class Renderer:
         # Tela
         self.cell_size = cell_size
         self.DEFAULT_WIDTH = self.WORLD.WIDTH * cell_size
-        self.DEFAULT_HEIGTH = self.WORLD.HEIGTH * cell_size #+ (self.UI_BAR_CELLS * cell_size)
+        self.DEFAULT_HEIGTH = self.WORLD.HEIGTH * cell_size
+        self.FONT_MULT = 4
         
         self.window_width = self.DEFAULT_WIDTH
         self.window_height = self.DEFAULT_HEIGTH
@@ -25,6 +26,7 @@ class Renderer:
         )
         
         self.Fullscreen = False
+        self.RenderFont = pygame.font.Font(None, int(self.FONT_MULT * self.cell_size))
         self._calculate_scale()
 
     @property
@@ -50,13 +52,18 @@ class Renderer:
             return Vector2(world_x, world_y)
         return None
 
-    def render(self):
+    def render(self, fps):
         # Enche a tela de cinza
         self.screen.fill(self.LETTERBOX_COLOR)
 
         # Barra superior para a UI 
-        ui_bar_height = int(self.ui_bar_heigth)
-        pygame.draw.rect(self.screen, self.UI_BAR_COLOR, (0, 0, self.window_width, ui_bar_height))
+        #ui_bar_height = int(self.ui_bar_heigth)
+        #ui_bar_y = int(self.offset_Y - ui_bar_height)
+        #pygame.draw.rect(
+        #    self.screen, 
+        #    self.UI_BAR_COLOR, 
+        #    (int(self.offset_X), ui_bar_y, int(self.WORLD.WIDTH * self.cell_size), ui_bar_height)
+        #)
 
         # World grid
         world_width = int(self.WORLD.WIDTH * self.cell_size)
@@ -74,7 +81,33 @@ class Renderer:
                 if chunk.isActive:
                     self._render_chunk(chunk)
 
+        # FPS, Pause Text & Menu
+        if not self.WORLD.Running:
+            pausedText = "SIMULAÇÃO PAUSADA"
+            textW, textH = self.RenderFont.size(pausedText)
+            pausedText = self.RenderFont.render(pausedText, True, (255, 255, 255))
+
+            text_X = (self.window_width - self.offset_X) - textW
+            text_Y = self.offset_Y
+            self.screen.blit(
+                pausedText,
+                (text_X, text_Y)
+            )
+
+        menuText = "[M] Menu"
+        menuW, menuH = self.RenderFont.size(menuText)
+        menuText = self.RenderFont.render(menuText, True, (255, 255, 255))
+        self.screen.blit(menuText, (self.offset_X, self.offset_Y))
+
+        fpsText = self.RenderFont.render("QPS: "+fps, True, (255, 255, 255))
+        self.screen.blit(fpsText, (self.offset_X, self.offset_Y + menuH))
+
+        # Brush
         self._render_brush_preview()
+
+    def openMenu(self):
+        self.isMenuOpen = not self.isMenuOpen
+        self._calculate_scale()
 
     def _render_brush_preview(self):
             if utils.BRUSH_RADIUS <= 0:
@@ -98,17 +131,21 @@ class Renderer:
             self.screen.blit(preview_surface, (mouse_x - diameter // 2, mouse_y - diameter // 2))
 
     def _calculate_scale(self):
+        # Espaço disponível à direita do menu
         scale_X = self.window_width / self.WORLD.WIDTH
         scale_Y = self.window_height / (self.WORLD.HEIGTH + self.UI_BAR_CELLS)
 
         self.cell_size = min(scale_X, scale_Y)
 
         ui_bar_height = self.UI_BAR_CELLS * self.cell_size
+        world_pixel_width = self.WORLD.WIDTH * self.cell_size
         world_pixel_height = self.WORLD.HEIGTH * self.cell_size
+        total_content_height = ui_bar_height + world_pixel_height
 
-        self.offset_X = (self.window_width - (self.WORLD.WIDTH * self.cell_size)) / 2
-        self.offset_Y = ui_bar_height
-    
+        self.offset_X = (self.window_width - world_pixel_width) / 2
+        self.offset_Y = (self.window_height - total_content_height) / 2 + ui_bar_height
+        self.RenderFont = pygame.font.Font(None, int(self.FONT_MULT * self.cell_size))
+
     def _render_chunk(self, chunk):
         # Inicio da conversal para coordenada mundial
         base_x = chunk.Position.X * self.WORLD.CHUNK_SIZE

@@ -38,10 +38,18 @@ class EventHandler:
         if key == pygame.K_ESCAPE:
             self.WORLD.Running = not self.WORLD.Running
 
+        # Menu
+        if key == pygame.K_m:
+            self.UI.isMenuOpen = not self.UI.isMenuOpen
+
         # ir para o proximo frame
         if key == pygame.K_SPACE:
             if not self.WORLD.Running:
                 self.WORLD.update()
+
+        # resetar
+        if key == pygame.K_r:
+            self.WORLD.reset()
 
         # fullscreen
         if key == pygame.K_F11:
