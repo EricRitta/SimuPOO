@@ -1,4 +1,5 @@
 import pygame
+import ui
 import utils
 from utils import Vector2
 
@@ -27,6 +28,9 @@ class Renderer:
         
         self.Fullscreen = False
         self.RenderFont = pygame.font.Font(None, int(self.FONT_MULT * self.cell_size))
+
+        self.offset_X = 0
+        self.offset_Y = 0
         self._calculate_scale()
 
     @property
@@ -84,23 +88,20 @@ class Renderer:
         # FPS, Pause Text & Menu
         if not self.WORLD.Running:
             pausedText = "SIMULAÇÃO PAUSADA"
-            textW, textH = self.RenderFont.size(pausedText)
-            pausedText = self.RenderFont.render(pausedText, True, (255, 255, 255))
+            pausedSize = self.RenderFont.size(pausedText)
 
-            text_X = (self.window_width - self.offset_X) - textW
-            text_Y = self.offset_Y
-            self.screen.blit(
-                pausedText,
-                (text_X, text_Y)
-            )
+            text_X = (self.window_width - self.offset_X) - pausedSize[0]
+            text_Y = (self.window_height - self.offset_Y) + self.ui_bar_heigth - pausedSize[1]
+            self._drawInfoText(pausedText, (text_X, text_Y), 3)
+
+        fpsText = "QPS: " + fps
+        fpsTextSize = self.RenderFont.size(fpsText)
+        text_Y = (self.window_height - self.offset_Y) + self.ui_bar_heigth - fpsTextSize[1]
+        self._drawInfoText(fpsText, (self.offset_X, text_Y), 3)
 
         menuText = "[M] Menu"
-        menuW, menuH = self.RenderFont.size(menuText)
-        menuText = self.RenderFont.render(menuText, True, (255, 255, 255))
-        self.screen.blit(menuText, (self.offset_X, self.offset_Y))
-
-        fpsText = self.RenderFont.render("QPS: "+fps, True, (255, 255, 255))
-        self.screen.blit(fpsText, (self.offset_X, self.offset_Y + menuH))
+        menu_Y = (text_Y - fpsTextSize[1]) - 0.5 * self.cell_size
+        self._drawInfoText(menuText, (self.offset_X, menu_Y), 3)
 
         # Brush
         self._render_brush_preview()
@@ -108,6 +109,18 @@ class Renderer:
     def openMenu(self):
         self.isMenuOpen = not self.isMenuOpen
         self._calculate_scale()
+
+    def _drawInfoText(self, text: str, position: tuple, outline_width: int):
+        x, y = position
+
+        for dx in range(-outline_width, outline_width+1):
+            for dy in range(-outline_width, outline_width+1):
+                if dx != 0 or dy != 0:
+                    outline_surface = self.RenderFont.render(text, True, (0, 0, 0))
+                    self.screen.blit(outline_surface, (x+dx, y+dy))
+
+        infoText = self.RenderFont.render(text, True, (255, 255, 255))
+        self.screen.blit(infoText, (x, y))
 
     def _render_brush_preview(self):
             if utils.BRUSH_RADIUS <= 0:

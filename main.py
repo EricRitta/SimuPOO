@@ -7,7 +7,6 @@ import utils
 
 def main():
     pygame.init()
-    print("Press [M] to open the menu!")
     
     physics_accumulator = 0.0
     physics_timestep = 1.0 / utils.PHYSICS_RATE

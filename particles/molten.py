@@ -9,6 +9,7 @@ class Molten(Liquid):
             1.0,                                     # Particle Heat Capacity
             0.2,                                     # Particle Heat Conductivity
         )
+        self.LOOK_UP = 1
         self.VISCOSITY = 3
         self.Temperature = 2000
         

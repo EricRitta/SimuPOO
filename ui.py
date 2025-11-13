@@ -67,7 +67,7 @@ class Button:
             separetor_radius / self.INSIDE_DIVISOR,
         )
 
-    def _updateRadiusAndPosition(self, position: Vector2, max_radius: (int, float)):
+    def _updateRadiusAndPosition(self, position: Vector2, max_radius):
         # Mudar a posição e o radius maximo para calcular o radius normal
         self.Position = position
         self.MAX_RADIUS = max_radius
@@ -129,7 +129,7 @@ class Ui:
         self.MENU_MAX_ANIMATION_FRAMES = 30
         self.MENU_AnimationFrames = 0
 
-        self.MenuFont = pygame.font.Font(None, int(4 * self.RENDERER.cell_size))
+        self.MenuFont = pygame.font.Font(None, int(6 * self.RENDERER.cell_size))
 
         # code
         self.font = pygame.font.Font(None, int(6 * self.RENDERER.cell_size))
@@ -163,6 +163,9 @@ class Ui:
 
         self.TOPUI_ScrollFrames = self.TOPUI_Max_ScrollFrames * scroll_percentage
         self.font = pygame.font.Font(None, int(6 * self.RENDERER.cell_size))
+
+        # Menu
+        self.MenuFont = pygame.font.Font(None, int(6 * self.RENDERER.cell_size))
 
     def render(self):
         self._renderTopUI()
@@ -201,7 +204,7 @@ class Ui:
         button.Active = True
         self.TOPUI_SelectedButton = index
 
-### MENU ------------------------------------------------------------------------------------------------------------
+### MENU ---------------------------------------------------------------------------------------------------
     def _renderMenu(self):
         if self.isMenuOpen:
             self.MENU_AnimationFrames = min(self.MENU_MAX_ANIMATION_FRAMES, self.MENU_AnimationFrames + 1)
@@ -234,12 +237,12 @@ class Ui:
             ((menu_width - background_width) / 2, (menu_height - background_height) / 2, background_width, background_height)
         )
 
-# PRIVADA NÃO ACESSAR, REPITO, NÃO GOZAR
+# PRIVADA: NÃO ACESSAR, REPITO, NÃO GOZAR
     def __getMouse(self) -> Vector2:
         mouse_X, mouse_Y = pygame.mouse.get_pos()
         return Vector2(mouse_X, mouse_Y)
 
-    def __isMouseInCircularBounds(self, mousePos: Vector2, buttonPos: Vector2, radius: (int, float)) -> bool:
+    def __isMouseInCircularBounds(self, mousePos: Vector2, buttonPos: Vector2, radius) -> bool:
         if self.isMenuOpen: return False
         dx = mousePos.X - buttonPos.X
         dy = mousePos.Y - buttonPos.Y
