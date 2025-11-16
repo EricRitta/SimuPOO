@@ -14,7 +14,9 @@ class Water(Liquid):
             4.0,                                     # Particle Heat Capacity
             0.2,                                     # Particle Heat Conductivity
         )
+        self.COLD_COLOR_START = 0.0
         self.BOILING_POINT = 100.0
+        self.FREEZING_POINT = 0.0
 
     def tempChanged(self, WORLD, position):
         if self.Temperature > self.BOILING_POINT:

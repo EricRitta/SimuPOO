@@ -285,11 +285,11 @@ class Ui:
         controls = [
             "CONTROLES",
             "ESC: Pausar a simulação.",
-            "ESPAÇO: Próximo frame.",
-            "R: Resetar.",
+            "ESPAÇO: Próximo quadro.",
+            "R: Resetar a simulação.",
             "M1: Colocar particula.",
             "SCROLL: Tamanho do pincel.",
-            "M2: Deletar particula."
+            "M2: Remover particula."
         ]
         sizeAccumulator = 0
         for text in reversed(controls):

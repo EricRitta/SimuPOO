@@ -26,9 +26,13 @@ class Particle(ABC):
         
         # Temperatura
         self.Temperature = utils.AMBIENT_TEMPERATURE
-        self.MAX_TEMPERATURE = 2000.0
-        self.MIN_TEMPERATURE = -273.0
-        self.HEAT_START_TEMP = 200.0
+        self.MAX_TEMPERATURE = utils.MAX_CELL_TEMPERATURE
+        self.MIN_TEMPERATURE = utils.MIN_CELL_TEMPERATURE
+
+        self.MAX_TEMP_COLOR = 2000.0
+        self.MIN_TEMP_COLOR = self.MIN_TEMPERATURE
+        self.HEAT_COLOR_START = 200.0
+        self.COLD_COLOR_START = -50
 
         # Game things
         self.MAX_DEAD_FRAMES = 5
@@ -42,26 +46,39 @@ class Particle(ABC):
 
     @property
     def Color(self):
-        if self.Temperature <= self.HEAT_START_TEMP:
+        temp = self.Temperature
+        if self.COLD_COLOR_START < temp <= self.HEAT_COLOR_START:
             return self._COLOR
         
         base = self._COLOR
-        actualTemp = min(self.Temperature, self.MAX_TEMPERATURE)
-        factor = min((actualTemp - self.HEAT_START_TEMP) / (self.MAX_TEMPERATURE - self.HEAT_START_TEMP), 1.0)
+
+        # Geladinha uiii
+        if temp <= self.COLD_COLOR_START:
+            actual_temp = max(temp, self.MIN_TEMP_COLOR)
+            factor = min((self.COLD_COLOR_START - actual_temp) / (self.COLD_COLOR_START - self.MIN_TEMP_COLOR), 1.0)
+
+            return (
+                int(base[0] + (255 - base[0]) * factor),
+                int(base[1] + (255 - base[1]) * factor),
+                int(base[2] + (255 - base[2]) * factor),
+            )
+
+        # Quentinha ai ai
+        actualTemp = min(temp, self.MAX_TEMP_COLOR)
+        factor = min((actualTemp - self.HEAT_COLOR_START) / (self.MAX_TEMP_COLOR - self.HEAT_COLOR_START), 1.0)
         
-        subfactor = factor / 0.5
+        subfactor = factor * 2
         target = (255, 0, 0)
         if factor >= 0.5:
             subfactor = (factor - 0.5) / 0.5
             target = (255, 255, 0)
             base = (255, 0, 0)
 
-        final_color = (
+        return (
             int(base[0] + (target[0] - base[0]) * subfactor),
             int(base[1] + (target[1] - base[1]) * subfactor),
             int(base[2] + (target[2] - base[2]) * subfactor),
         )
-        return final_color
 
     @abstractmethod
     def update(self, WORLD, position):

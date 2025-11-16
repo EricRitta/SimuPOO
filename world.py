@@ -48,10 +48,9 @@ class World:
         self.HEIGTH = actualHeigth
         self.CHUNK_SIZE = chunkSize
 
-        self.MAX_TEMPERATURE = 2000.0
-        self.MIN_TEMPERATURE = -273.0
+        self.MAX_AIR_TEMPERATURE = utils.MAX_CELL_TEMPERATURE
+        self.MIN_AIR_TEMPERATURE = utils.MIN_CELL_TEMPERATURE
         self.TEMP_ACTIVATION_THRESHOLD = 10.0
-
         self.AIR_HEAT_CAPACITY = 4.0
         self.AIR_HEAT_CONDUCTIVITY = 0.1
         self.AIR_HEAT_DISPERSION_START = 200.0
@@ -96,7 +95,7 @@ class World:
         
         for chunk_Y in range(self.Chunks_Quantity_Y - 1, -1, -1):
             for chunk_X in range(self.Chunks_Quantity_X):
-                chunk = self.Chunks[chunk_Y][chunk_X]
+                chunk: Chunk = self.Chunks[chunk_Y][chunk_X]
                 if chunk.isActive:
                     self.update_chunk(chunk)
 
@@ -106,7 +105,7 @@ class World:
         # Reseta todos os chunks
         for chunk_Y in range(self.Chunks_Quantity_Y):
             for chunk_X in range(self.Chunks_Quantity_X):
-                chunk = self.Chunks[chunk_Y][chunk_X]
+                chunk: Chunk = self.Chunks[chunk_Y][chunk_X]
                 
                 chunk.Active_Particles.clear()
                 chunk.Entropy_Affected.clear()
@@ -132,7 +131,7 @@ class World:
         
         # Verifica se o chunk existe
         if 0 <= chunkPos.X < self.Chunks_Quantity_X and 0 <= chunkPos.Y < self.Chunks_Quantity_Y:
-            chunk = self.Chunks[chunkPos.Y][chunkPos.X]
+            chunk: Chunk = self.Chunks[chunkPos.Y][chunkPos.X]
 
             # Remoção ou adição de particula
             if particleName is None:
@@ -152,7 +151,7 @@ class World:
         
         # Verifica se o chunk existe
         if 0 <= chunkPos.X < self.Chunks_Quantity_X and 0 <= chunkPos.Y < self.Chunks_Quantity_Y:
-            chunk = self.Chunks[chunkPos.Y][chunkPos.X]
+            chunk: Chunk = self.Chunks[chunkPos.Y][chunkPos.X]
 
             # Remoção ou adição de particula
             chunk._addParticle(particle, gridPos)
@@ -397,7 +396,7 @@ class World:
             new_temp = current_temp + heat_change
             
             # Clamp da temperatura
-            new_temp = max(self.MIN_TEMPERATURE, min(self.MAX_TEMPERATURE, new_temp))
+            new_temp = max(self.MIN_AIR_TEMPERATURE, min(self.MAX_AIR_TEMPERATURE, new_temp))
             
             # Aplica a nova temperatura
             if isinstance(cell, (int, float)):

@@ -15,11 +15,11 @@ class Molten(Liquid):
         self.Temperature = 2000
         
         self.COLD_PARTICLE = None
-        self.TEMPERATURE_TO_COLD = 800.0
+        self.FREEZING_POINT = 800.0
 
     def tempChanged(self, WORLD, position):
         if not self.COLD_PARTICLE: return
-        if self.Temperature <= self.TEMPERATURE_TO_COLD:
+        if self.Temperature <= self.FREEZING_POINT:
             coldParticle = WORLD.createParticleInstance(self.COLD_PARTICLE)
             coldParticle.Temperature = self.Temperature
             coldParticle.Current_Frame = self.Current_Frame
