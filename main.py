@@ -26,11 +26,10 @@ def main():
         dt = clock.tick(utils.TARGET_FPS) / 1000.0
         dt = 0.1 if dt > 0.1 else dt
 
-        eventsResult = EVENT_HANDLER.handle()
-        if eventsResult is False:
+        if EVENT_HANDLER.handle() is False:
             running = False
      
-        mouseResults = EVENT_HANDLER.handleContinuosMouse()
+        EVENT_HANDLER.handleContinuosMouse()
 
         # implementação horrososa de dt, mas a preguiça fala mais alto
         if WORLD.Running:

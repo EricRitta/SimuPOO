@@ -1,9 +1,14 @@
 from particles.base import Liquid
 
 class Water(Liquid):
+    ORDER = 2
+    NAME = "Water"
+    IMAGE_NAME = "Água"
+    IMAGE_COLOR = (70, 140, 255)
+    CONCRETE = True
+
     def __init__(self):
         super().__init__(
-            "Water",                                 # Particle Name 
             (70, 140, 255, 10),                      # Particle Color tuple[RED, GREEN, BLUE, VARIATION]
             1,                                       # Particle Density
             4.0,                                     # Particle Heat Capacity

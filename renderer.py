@@ -1,5 +1,4 @@
 import pygame
-import ui
 import utils
 from utils import Vector2
 

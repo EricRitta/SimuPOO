@@ -3,8 +3,10 @@ from utils import Vector2
 import random
 
 class Gas(Particle):
-    def __init__(self, name: str, color: tuple[int, int, int, int], density: float, heat_capacity: float, heat_conductivity: float):
-        super().__init__(name, color, density, heat_capacity, heat_conductivity)
+    ORDER = 200
+
+    def __init__(self, color: tuple[int, int, int, int], density: float, heat_capacity: float, heat_conductivity: float):
+        super().__init__(color, density, heat_capacity, heat_conductivity)
         self.MAX_DEAD_FRAMES = 30
         self.WEIGHT = 3
         self._weight_frames = 0

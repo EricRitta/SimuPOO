@@ -3,8 +3,10 @@ from utils import Vector2
 import random
 
 class MovableSolid(Particle):
-    def __init__(self, name: str, color: tuple[int, int, int, int], density: float, heat_capacity: float, heat_conductivity: float):
-        super().__init__(name, color, density, heat_capacity, heat_conductivity)
+    ORDER = 50
+
+    def __init__(self, color: tuple[int, int, int, int], density: float, heat_capacity: float, heat_conductivity: float):
+        super().__init__(color, density, heat_capacity, heat_conductivity)
 
     def update(self, WORLD, position):
         if self._inFluid_movement(WORLD, position): return

@@ -1,11 +1,12 @@
 from particles.base import Liquid
 
 class Molten(Liquid):
+    NAME = "Molten"
+
     def __init__(self):
         super().__init__(
-            "Molten",                                 # Particle Name 
             (255, 255, 255, 0),                      # Particle Color tuple[RED, GREEN, BLUE, VARIATION]
-            10,                                       # Particle Density
+            10,                                      # Particle Density
             1.0,                                     # Particle Heat Capacity
             0.2,                                     # Particle Heat Conductivity
         )

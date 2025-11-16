@@ -1,6 +1,6 @@
 from utils import Vector2
 import pygame
-import utils
+import particles
 
 # Curva bezier
 def BezierInAcc(t: float) -> float:
@@ -13,11 +13,12 @@ def BezierInAcc(t: float) -> float:
     return 1 - (1 - t)**2 * (2.7 * (1 - t) - 1.7)
 
 class Button:
-    def __init__(self, name: str, particle: str, color: tuple[int, int, int]):
+    def __init__(self, name: str, particle: str, color: tuple[int, int, int], description: str):
         # Basic
         self.NAME = name
         self.PARTICLE = particle
         self.COLOR = color
+        self.DESCRIPTION = description
         self.MAX_RADIUS = 0
         self.Position = Vector2(0, 0)
         self.Radius = 0
@@ -129,12 +130,19 @@ class Ui:
         self.MENU_MAX_ANIMATION_FRAMES = 30
         self.MENU_AnimationFrames = 0
 
-        self.MenuFont = pygame.font.Font(None, int(6 * self.RENDERER.cell_size))
-
         # code
         self.font = pygame.font.Font(None, int(6 * self.RENDERER.cell_size))
-        for particle in utils.PARTICLES_INFO:
-            self.ParticlesButtons.append(Button(particle["Name"], particle["Particle"], particle["Color"]))
+        for name in particles.ParticlesInfo:
+            particleInfo = particles.ParticlesInfo[name]
+            if particleInfo["CONCRETE"] is True:
+                self.ParticlesButtons.append(
+                    Button(
+                        particleInfo["IMAGE_NAME"], 
+                        particleInfo["NAME"], 
+                        particleInfo["IMAGE_COLOR"], 
+                        particleInfo['DESCRIPTION']
+                    )
+                )
 
     @property
     def menuWidth(self):
@@ -236,6 +244,63 @@ class Ui:
             self.MENU_BACKGROUND,
             ((menu_width - background_width) / 2, (menu_height - background_height) / 2, background_width, background_height)
         )
+
+        # TEXTO --------
+        menuSizePercentage = menu_width / self.menuWidth
+        TitleFont = pygame.font.Font(None, int((12 * self.RENDERER.cell_size) * menuSizePercentage))
+        MenuFont = pygame.font.Font(None, int((5 * self.RENDERER.cell_size) * menuSizePercentage))
+
+        # Titulo
+        titleText = "SimuPOO"
+        titleTextSize = TitleFont.size(titleText)
+        title_X = (menu_width / 2) - (titleTextSize[0] / 2)
+        title_Y = menu_height - background_height
+        title = TitleFont.render(titleText, True, (255, 255, 255))
+        self.RENDERER.screen.blit(title, (title_X, title_Y))
+
+        # Mensagem
+        message = [
+            'Nenhuma partícula selecionada.',
+            'Escolha uma partícula passando',
+            "o mouse sobre os círculos na",
+            'parte superior da tela.',
+            'Clique [M1] para confirmar.'
+        ]
+
+        if self.TOPUI_SelectedButton is not None:
+            message = self.ParticlesButtons[self.TOPUI_SelectedButton].DESCRIPTION
+
+        sizeAccumulator = 0
+        for text in message:
+            textSize = MenuFont.size(text)
+            tt = MenuFont.render(text, True, (255, 255, 255))
+            self.RENDERER.screen.blit(tt, (
+                (menu_width / 2) - (textSize[0] / 2),
+                (menu_height - background_height) + (titleTextSize[1] * 2) + sizeAccumulator
+            ))
+            sizeAccumulator += (textSize[1])
+            
+
+        # Controles
+        controls = [
+            "CONTROLES",
+            "ESC: Pausar a simulação.",
+            "ESPAÇO: Próximo frame.",
+            "R: Resetar.",
+            "M1: Colocar particula.",
+            "SCROLL: Tamanho do pincel.",
+            "M2: Deletar particula."
+        ]
+        sizeAccumulator = 0
+        for text in reversed(controls):
+            textSize = MenuFont.size(text)
+            tt = MenuFont.render(text, True, (255, 255, 255))
+            self.RENDERER.screen.blit(tt, (
+                menu_width - background_width,
+                (background_height - (textSize[1] / 2) * 1.5) - sizeAccumulator
+            ))
+            sizeAccumulator += (textSize[1] + 0.5 * self.RENDERER.cell_size)
+
 
 # PRIVADA: NÃO ACESSAR, REPITO, NÃO GOZAR
     def __getMouse(self) -> Vector2:

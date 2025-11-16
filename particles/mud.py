@@ -1,9 +1,13 @@
 from particles.base import ImmovableSolid
 
 class Mud(ImmovableSolid):
+    NAME = "Mud"
+    IMAGE_NAME = "Lama"
+    IMAGE_COLOR = (110, 100, 70)
+    CONCRETE = True
+
     def __init__(self):
         super().__init__(
-            "Mud",                                  # Particle Name 
             (110, 100, 70, 15),                     # Particle Color tuple[RED, GREEN, BLUE, VARIATION]
             3,                                      # Particle Density
             1.2,                                    # Particle Heat Capacity

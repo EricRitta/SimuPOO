@@ -1,11 +1,15 @@
 from particles.base import Gas
 
 class Steam(Gas):
+    NAME = "Steam"
+    IMAGE_NAME = "Vapor"
+    IMAGE_COLOR = (175, 175, 175)
+    CONCRETE = True
+
     def __init__(self):
         super().__init__(
-            "Steam",                                 # Particle Name 
-            (175, 175, 175, 5),                    # Particle Color tuple[RED, GREEN, BLUE, VARIATION]
-            -6,                                      # Particle Density
+            (175, 175, 175, 5),                     # Particle Color tuple[RED, GREEN, BLUE, VARIATION]
+            -6,                                     # Particle Density
             2.0,                                    # Particle Heat Capacity (maior = mais resistencia ao hea)
             0.05,                                   # Particle Heat Conductivity (maior = mais perda de calor)
         )

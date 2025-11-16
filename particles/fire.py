@@ -1,9 +1,14 @@
 from particles.base import Gas
 
 class Fire(Gas):
+    ORDER = 4
+    NAME = "Fire"
+    IMAGE_NAME = "Fogo"
+    IMAGE_COLOR = (255, 150, 50)
+    CONCRETE = True
+
     def __init__(self):
         super().__init__(
-            "Fire",                                 # Particle Name 
             (100, 100, 100, 5),                    # Particle Color tuple[RED, GREEN, BLUE, VARIATION]
             -10,                                      # Particle Density
             0.5,                                    # Particle Heat Capacity (maior = mais resistencia ao hea)

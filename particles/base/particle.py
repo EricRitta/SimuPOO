@@ -3,9 +3,18 @@ import utils
 import random
 
 class Particle(ABC):
-    def __init__(self, name: str, color: tuple[int, int, int, int], density: float, heat_capacity: float, heat_conductivity: float):
+    ORDER = 999
+    NAME = "Particle"
+    #IMAGE_NAME = "Partícula"
+    DESCRIPTION = [
+        "Não há descrição disponível",
+        "para a partícula selecionada."
+    ]
+    IMAGE_COLOR = (255, 255, 255)
+    CONCRETE = False
+    
+    def __init__(self, color: tuple[int, int, int, int], density: float, heat_capacity: float, heat_conductivity: float):
         # Constantes defaults
-        self.NAME = name
         self.DENSITY = density
         self.HEAT_CAPACITY = heat_capacity
         self.HEAT_CONDUCTIVITY = heat_conductivity
