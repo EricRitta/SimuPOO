@@ -9,10 +9,10 @@ def main():
     pygame.init()
     
     physics_accumulator = 0.0
-    physics_timestep = 1.0 / utils.PHYSICS_RATE
+    physics_timestep = utils.PHYSICS_STEP / utils.TARGET_FPS
 
     heat_accumulator = 0.0
-    heat_timestep = 10.0 / utils.TARGET_FPS  # 10 frames no framerate alvo
+    heat_timestep = utils.TEMPERATURE_STEP / utils.TARGET_FPS
 
     WORLD = World(utils.WORLD_WIDTH, utils.WORLD_HEIGTH, utils.CHUNK_SIZE)
     RENDERER = Renderer(WORLD, utils.CELL_SIZE)

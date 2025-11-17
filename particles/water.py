@@ -21,3 +21,10 @@ class Water(Liquid):
     def tempChanged(self, WORLD, position):
         if self.Temperature > self.BOILING_POINT:
             WORLD.killAndReplace(position, "Steam")
+
+        if self.Temperature < self.FREEZING_POINT:
+            coldParticle = WORLD.createParticleInstance('Ice')
+            coldParticle.Temperature = -20
+            coldParticle.Current_Frame = self.Current_Frame
+            WORLD.setParticle(None, position, True)
+            WORLD.setInstancedParticle(coldParticle, position)

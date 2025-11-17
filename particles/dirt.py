@@ -14,6 +14,7 @@ class Dirt(MovableSolid):
             1.0,                                    # Particle Heat Capacity (maior = mais resistencia ao hea)
             0.2,                                   # Particle Heat Conductivity (maior = mais perda de calor)
         )
+        self.RIGIDITY = 8
         if random.randint(1, 10) == 1:
             self._COLOR = (
                 max(0, min(255, 150 + random.randint(-10, 10))),

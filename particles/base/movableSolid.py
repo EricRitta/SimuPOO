@@ -7,6 +7,7 @@ class MovableSolid(Particle):
 
     def __init__(self, color: tuple[int, int, int, int], density: float, heat_capacity: float, heat_conductivity: float):
         super().__init__(color, density, heat_capacity, heat_conductivity)
+        self.RIGIDITY = 1
 
     def update(self, WORLD, position):
         if self._inFluid_movement(WORLD, position): return
@@ -27,18 +28,24 @@ class MovableSolid(Particle):
 
 
     def _movement(self, WORLD, position):
-        allDir = [(-1, 1), (1, 1)]
-        random.shuffle(allDir)
-        allDir.insert(0, (0, 1))
-        
-        direction = Vector2(0, 0)
-        for cx, cy in allDir:
-            direction.X = position.X + cx
-            direction.Y = position.Y + cy
-            if WORLD.getParticle(direction) is None:
-                self.movedThisFrame = True
-                WORLD.killAndMove(position, direction)
-                break
+        downVector = Vector2(position.X, position.Y + 1)
+        if WORLD.getParticle(downVector) is None:
+            self.movedThisFrame = True
+            WORLD.killAndMove(position, downVector)
+            return
+
+        if random.randint(1, self.RIGIDITY) == 1:
+            allDir = [(-1, 1), (1, 1)]
+            random.shuffle(allDir)
+            direction = Vector2(0, 0)
+
+            for cx, cy in allDir:
+                direction.X = position.X + cx
+                direction.Y = position.Y + cy
+                if WORLD.getParticle(direction) is None:
+                    self.movedThisFrame = True
+                    WORLD.killAndMove(position, direction)
+                    break
 
     def _inFluid_movement(self, WORLD, position):
         directions = [(0, 1), (-1, 1), (1, 1)]

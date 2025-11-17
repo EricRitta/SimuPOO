@@ -138,7 +138,16 @@ class World:
                 chunk._removeParticle(gridPos)
                 if wakeUpWhenNone:
                     self.wakeUpNeighbors(position)
+
             else:
+                if particleName == "HeatAdd":
+                    self._changeTemperature(chunk, gridPos, 10)
+                    return
+
+                if particleName == "ColdAdd":
+                    self._changeTemperature(chunk, gridPos, -10)
+                    return
+
                 particle = newParticle(particleName)
                 chunk._addParticle(particle, gridPos)
                 if abs(particle.Temperature - utils.AMBIENT_TEMPERATURE) > self.TEMP_ACTIVATION_THRESHOLD:
@@ -283,6 +292,14 @@ class World:
 
     
     # MÉTODO DA TEMPERATURA
+    def _changeTemperature(self, chunk: Chunk, gridPos: Vector2, rate: int):
+        particle = chunk.GRID[gridPos.Y][gridPos.X]
+        if isinstance(particle, (int, float)):
+            particle =+ rate
+        else:
+            particle.Temperature += rate
+        chunk.Entropy_Affected.add((gridPos.X, gridPos.Y))
+
     def wakeUpHeatNeighbors(self, position: Vector2):
         posX, posY = position.X, position.Y
         for dx, dy in self.NEIGHBOR_OFFSETS:

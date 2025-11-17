@@ -12,13 +12,21 @@ class Molten(Liquid):
         )
         self.LOOK_UP = 1
         self.VISCOSITY = 3
-        self.Temperature = 2000
-        
+
+        self.ALIVE_TIME = 0
+        self.MAX_ALIVE_TIME = 12
+
+        self.Temperature = 1300
+        self.COLD_PARTICLE_TEMP = 1300
         self.COLD_PARTICLE = None
         self.FREEZING_POINT = 800.0
 
     def tempChanged(self, WORLD, position):
         if not self.COLD_PARTICLE: return
+        if self.ALIVE_TIME < self.MAX_ALIVE_TIME:
+            self.ALIVE_TIME += 1
+            self.Temperature = self.COLD_PARTICLE_TEMP
+
         if self.Temperature <= self.FREEZING_POINT:
             coldParticle = WORLD.createParticleInstance(self.COLD_PARTICLE)
             coldParticle.Temperature = self.Temperature
