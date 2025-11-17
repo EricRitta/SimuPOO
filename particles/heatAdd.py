@@ -5,6 +5,10 @@ class HeatAdd(ImmovableSolid):
     NAME = "HeatAdd"
     IMAGE_NAME = "Aumentar Temperatura"
     IMAGE_COLOR = (255, 0, 0)
+    DESCRIPTION = [
+        "Usado para aumentar a",
+        "Temperatura",
+    ]
     CONCRETE = True
 
     def __init__(self):

@@ -16,6 +16,16 @@ class Sand(MovableSolid):
         "No SimuPOO, ela tem uma das,",
         "senão a, lógica mais simples",
         "de todas as partículas.",
+        "",
+        "",
+        "COMPORTAMENTO",
+        "",
+        "Cai verticalmente.",
+        "",
+        "Desliza diagonalmente quando",
+        "encontra obstáculos abaixo",
+        "",
+        "Se acumula formando dunas",
     ]
 
     CONCRETE = True

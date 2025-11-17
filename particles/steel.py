@@ -5,6 +5,29 @@ class Steel(ImmovableSolid):
     NAME = "Steel"
     IMAGE_NAME = "Aço"
     IMAGE_COLOR = (100, 100, 100)
+    DESCRIPTION = [
+        "AÇO",
+        'O aço é uma liga metálica',
+        'de ferro e carbono, conhecida',
+        'por sua resistência e durabilidade.',
+        'É um dos materiais mais usados',
+        'na construção e indústria.',
+        "",
+        "",
+        "COMPORTAMENTO",
+        "",
+        "Não se movimenta.",
+        "",
+        "Não é afetado por gravidade",
+        "a não ser que esteja derretido.",
+        "",
+        "Pode derreter em temperaturas",
+        "extremas (>1200°C).",
+        "",
+        "Bloqueia movimento de outras",
+        "partículas.",
+        "",
+    ]
     CONCRETE = True
 
     def __init__(self):

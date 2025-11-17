@@ -5,6 +5,27 @@ class Fire(Gas):
     NAME = "Fire"
     IMAGE_NAME = "Fogo"
     IMAGE_COLOR = (255, 150, 50)
+    DESCRIPTION = [
+        "FOGO",
+        'Fogo é uma reação química',
+        'de combustão que libera luz,',
+        'calor e gases. Necessita de',
+        'combustível, oxigênio e uma',
+        'temperatura de ignição.',
+        "",
+        "",
+        "COMPORTAMENTO",
+        "",
+        "Sobe rapidamente (gas quente).",
+        "",
+        "Derrete gelo e evapora água.",
+        "",
+        "Consome-se gradualmente",
+        "(tempo de vida limitado).",
+        "",
+        "Aquece partículas adjacentes.",
+        ""
+    ]
     CONCRETE = True
 
     def __init__(self):

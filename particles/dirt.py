@@ -5,6 +5,25 @@ class Dirt(MovableSolid):
     NAME = "Dirt"
     IMAGE_NAME = "Terra"
     IMAGE_COLOR = (180, 145, 90)
+    DESCRIPTION = [
+        "TERRA",
+        'Terra é uma mistura de minerais,',
+        'matéria orgânica, água e ar.',
+        'É a base para o crescimento',
+        'de plantas e suporta ecossistemas',
+        'terrestres inteiros.',
+        "",
+        "",
+        "COMPORTAMENTO",
+        "",
+        "Cai verticalmente.",
+        "",
+        "Desliza diagonalmente em",
+        "ângulos menores que areia",
+        "(maior rigidez).",
+        "",
+        "Forma pilhas mais compactas.",
+    ]
     CONCRETE = True
 
     def __init__(self):

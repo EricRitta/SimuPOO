@@ -4,6 +4,24 @@ class Steam(Gas):
     NAME = "Steam"
     IMAGE_NAME = "Vapor"
     IMAGE_COLOR = (175, 175, 175)
+    DESCRIPTION = [
+        "VAPOR",
+        'Vapor é o estado gasoso da',
+        'água, formado quando moléculas',
+        'de H2O ganham energia suficiente',
+        'para se dispersar no ar.',
+        'É invisível a olho nu.',
+        "",
+        '',
+        "COMPORTAMENTO",
+        "",
+        "Sobe naturalmente.",
+        "",
+        "Dispersa-se horizontalmente.",
+        "",
+        "Condensa virando água (<100°C).",
+        "",
+    ]
     CONCRETE = True
 
     def __init__(self):

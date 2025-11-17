@@ -4,6 +4,27 @@ class Ice(ImmovableSolid):
     NAME = "Ice"
     IMAGE_NAME = "Gelo"
     IMAGE_COLOR = (185, 210, 235)
+    DESCRIPTION = [
+        "GELO",
+        'Gelo é a forma sólida da água,',
+        'formado quando a temperatura',
+        'cai abaixo de 0°C. Suas moléculas',
+        'ficam organizadas em estrutura',
+        'cristalina hexagonal rígida.',
+        "",
+        "",
+        "COMPORTAMENTO",
+        '',
+        "Permanece estático (sólido).",
+        "",
+        "Não é afetado por gravidade.",
+        "",
+        "Derrete virando água (>0°C),",
+        "ou em contato com fogo.",
+        "",
+        "Esfria partículas adjacentes",
+        "",
+    ]
     CONCRETE = True
 
     def __init__(self):

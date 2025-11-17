@@ -5,6 +5,28 @@ class Water(Liquid):
     NAME = "Water"
     IMAGE_NAME = "Água"
     IMAGE_COLOR = (70, 140, 255)
+    DESCRIPTION = [
+        "ÁGUA",
+        'A água é um líquido essencial',
+        'para a vida, composto por',
+        'moléculas de H2O. Cobre 71%',
+        'da superfície terrestre e',
+        'existe em três estados físicos.',
+        "",
+        "",
+        "COMPORTAMENTO",
+        "",
+        "Cai verticalmente.",
+        "",
+        "Flui horizontalmente tendendo,",
+        "a um lado, até bater em algo.",
+        "",
+        " Preenche espaços vazios.",
+        "",
+        "Congela virando gelo (<0°C).",
+        "",
+        "Evapora virando vapor (>100°C).",
+    ]
     CONCRETE = True
 
     def __init__(self):
